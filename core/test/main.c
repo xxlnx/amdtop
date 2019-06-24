@@ -80,6 +80,12 @@ int main(int argc, char *argv[])
     if (ret)
         return ret;
     xFree(vbiosInfo.image);
+
+    char *name = NULL;
+    ret = gpuQueryDeviceName(&devices[0], &name);
+    INFO("ret = %d, name = %s\n", ret, name);
+    if (ret)
+        return ret;
     ret = gpuFreeDevices(&devices);
     if (ret)
         return ret;
