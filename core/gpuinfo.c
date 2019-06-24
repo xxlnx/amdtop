@@ -277,4 +277,71 @@ int gpuQueryPciInfo(struct GpuDevice *device,  struct GpuPciInfo *pciInfo)
 
     return ret;
 }
+int gpuQueryVbiosVersion(struct GpuDevice *device, char **verbios_version)
+{
+    int ret = 0, len = 0;
+    FILE *fp = NULL;
+    char buf[100] = {0};
+
+    snprintf(buf, sizeof(buf), "/sys/dev/char/%d:%d/device/vbios_version", device->major, device->minor);
+    fp = fopen(buf, "r");
+    if (!fp)
+        return -EIO;
+
+    memset(buf, 0, sizeof(buf));
+    len = fread(buf, 1, sizeof(buf) - 1, fp);
+    if (len > 0) {
+        buf[len - 1] = '\0';
+        *verbios_version = strdup(buf);
+    }
+    else {
+        ret = -EIO;
+    }
+
+    fclose(fp);
+
+    return ret;
+}
+
+int gpuQueryVBiosInfo(struct GpuDevice *device, struct GpuVBiosInfo* vBiosInfo)
+{
+    struct drm_amdgpu_info request = {0};
+    int ret = 0;
+
+    request.return_pointer = (__u64)&vBiosInfo->imagelen;
+    request.return_size = sizeof(vBiosInfo->imagelen);
+    request.query = AMDGPU_INFO_VBIOS;
+    request.vbios_info.type = AMDGPU_INFO_VBIOS_SIZE;
+
+    ret = gpuIoctl(device->fd, DRM_IOCTL_AMDGPU_INFO, &request);
+    if (ret)
+        return ret;
+
+    vBiosInfo->image = xAlloc(vBiosInfo->imagelen);
+    if (!vBiosInfo->image)
+        return -ENOMEM;
+
+    request.return_pointer = (__u64)vBiosInfo->image;
+    request.return_size = vBiosInfo->imagelen;
+    request.query = AMDGPU_INFO_VBIOS;
+    request.vbios_info.type = AMDGPU_INFO_VBIOS_IMAGE;
+    request.vbios_info.offset = 0;
+
+    ret = gpuIoctl(device->fd, DRM_IOCTL_AMDGPU_INFO, &request);
+    if (ret)
+        goto failed;
+
+    vBiosInfo->device = device;
+
+    ret = gpuQueryVbiosVersion(device, &vBiosInfo->vbios_version);
+    if (ret)
+        return ret;
+
+    return 0;
+
+failed:
+    if (vBiosInfo->image)
+        xFree(vBiosInfo->image);
+    return ret;
+}
 

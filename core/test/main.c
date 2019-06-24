@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
     struct GpuFwInfo fwInfo;
     struct GpuMemInfo memInfo;
     struct GpuSensorInfo sensorInfo;
+    struct GpuVBiosInfo vbiosInfo;
     int count = 2;
     int ret = 0;
     INFO("git rev = %s\n", BUILD_GIT_VERSION);
@@ -67,6 +68,18 @@ int main(int argc, char *argv[])
         ret, pciInfo.domain, pciInfo.bus, pciInfo.dev, pciInfo.func);
     INFO("ret = %d, vid = %04x, did = %04x, svid = %04x, sdid = %04x\n",
         ret, pciInfo.vid, pciInfo.did, pciInfo.sub_vid, pciInfo.sub_did);
+    char *vbios_version = NULL;
+    ret = gpuQueryVbiosVersion(&devices[0], &vbios_version);
+    INFO("ret = %d, vbios version = %s\n", ret, vbios_version);
+    if (ret)
+        return ret;
+    xFree(vbios_version);
+    ret = gpuQueryVBiosInfo(&devices[0], &vbiosInfo);
+    INFO("ret = %d, vbios version = %s, imagelen = %d, header = %02x %02x\n",
+        ret, vbiosInfo.vbios_version, vbiosInfo.imagelen, vbiosInfo.image[0], vbiosInfo.image[1]);
+    if (ret)
+        return ret;
+    xFree(vbiosInfo.image);
     ret = gpuFreeDevices(&devices);
     if (ret)
         return ret;

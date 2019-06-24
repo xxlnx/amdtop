@@ -92,11 +92,21 @@ struct GpuSensorInfo {
     uint32_t value;
 };
 
+struct GpuVBiosInfo {
+    struct GpuDevice *device;
+    char *vbios_version;
+    uint8_t  *image;
+    uint32_t imagelen;
+    uint32_t  offset; /* not used */
+};
+
 int gpuQueryPciInfo(struct GpuDevice *device,  struct GpuPciInfo *pciInfo);
 int gpuQueryDriverInfo(struct GpuDevice *device, struct GpuDriverInfo *driverInfo);
 int gpuQueryDeviceInfo(struct GpuDevice *device, struct GpuDeviceInfo *deviceInfo);
 int gpuQueryFWInfo(struct GpuDevice *device, enum GpuFwType type, uint32_t inst, uint32_t index, struct GpuFwInfo *fwInfo);
 int gpuQueryMemInfo(struct GpuDevice *device, enum GpuMemType type, struct GpuMemInfo *memInfo);
 int gpuQuerySensorInfo(struct GpuDevice *device, enum GpuSensorType type, struct GpuSensorInfo* sensorInfo);
+int gpuQueryVbiosVersion(struct GpuDevice *device, char **verbios_version);
+int gpuQueryVBiosInfo(struct GpuDevice *device, struct GpuVBiosInfo* vBiosInfo);
 
 #endif
