@@ -9,7 +9,7 @@
     _LOG("[INFO]:", fmt, ##__VA_ARGS__)
 #define WARN(fmt, ...) \
     _LOG("[WARN]:", fmt, ##__VA_ARGS__)
-#define ERR(fmt, ...) \
+#define ERROR(fmt, ...) \
     fprintf(stderr, "[ERROR]:" fmt, ##__VA_ARGS__)
 
 #ifdef __DEBUG__
