@@ -16,7 +16,7 @@
 #define DEBUG_TRACE() \
     _LOG("[TRACE]:", "%s:%d ret = %d\n", __func__, __LINE__, ret)
 #define DEBUG(fmt, ...) \
-    _LOG("[DEBUG]:", "%s:%d" fmt, __func__, __LINE__, ##__VA_ARGS__)
+    _LOG("[DEBUG]:", "%s:%d " fmt, __func__, __LINE__, ##__VA_ARGS__)
 #else
 #define DEBUG_TRACE()
 #define DEBUG(...)
