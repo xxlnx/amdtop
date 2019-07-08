@@ -277,7 +277,7 @@ int gpuQueryPciInfo(struct GpuDevice *device,  struct GpuPciInfo *pciInfo)
 
     return ret;
 }
-int gpuQueryVbiosVersion(struct GpuDevice *device, char **verbios_version)
+int gpuQueryVbiosVersion(struct GpuDevice *device, char *vbios_version)
 {
     int ret = 0, len = 0;
     FILE *fp = NULL;
@@ -292,12 +292,11 @@ int gpuQueryVbiosVersion(struct GpuDevice *device, char **verbios_version)
     len = fread(buf, 1, sizeof(buf) - 1, fp);
     if (len > 0) {
         buf[len - 1] = '\0';
-        *verbios_version = strdup(buf);
+        strncpy(vbios_version, buf, len);
     }
     else {
         ret = -EIO;
     }
-
     fclose(fp);
 
     return ret;
@@ -333,7 +332,7 @@ int gpuQueryVBiosInfo(struct GpuDevice *device, struct GpuVBiosInfo* vBiosInfo)
 
     vBiosInfo->device = device;
 
-    ret = gpuQueryVbiosVersion(device, &vBiosInfo->vbios_version);
+    ret = gpuQueryVbiosVersion(device, vBiosInfo->vbios_version);
     if (ret)
         return ret;
 
