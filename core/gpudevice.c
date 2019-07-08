@@ -11,6 +11,7 @@
 #include "gpudevice.h"
 #include "drmhelper.h"
 #include "utils/utils.h"
+#include "gpuinfo.h"
 
 int gpuOpenDevice(struct GpuDevice *device, const char *name)
 {
@@ -60,6 +61,7 @@ static int getDeviceTypebyName(const char *name)
         return DEVICE_TYPE_CARD;
     return DEVICE_TYPE_UNKNOW;
 }
+
 
 int gpuGetDevices(struct GpuDevice **gpuDevices, int *deviceCount, enum DeviceType type)
 {
@@ -116,4 +118,34 @@ int gpuGetDeviceCount(int type)
     if (ret)
         return ret;
     return count;
+}
+
+struct GpuDevice * gpuGetDeviceByBus(uint8_t domain, uint8_t bus, uint8_t dev, uint8_t func)
+{
+    struct GpuDevice *device= NULL, *devices = NULL, *foundDevice;
+    struct GpuPciInfo pciInfo = {0};
+    int deviceCount = 0;
+    int ret = 0;
+
+    ret = gpuGetDevices(&devices, &deviceCount, DEVICE_TYPE_RENDER);
+    if (ret)
+        return NULL;
+
+    for (int i = 0; i < deviceCount; i++) {
+        device = &devices[i];
+        ret = gpuQueryPciInfo(device, &pciInfo);
+        if (ret)
+            return NULL;
+        if (pciInfo.domain == domain &&
+            pciInfo.bus    == bus &&
+            pciInfo.dev    == dev &&
+            pciInfo.func   == func) {
+            foundDevice = device;
+        } else {
+            ret = gpuCloseDevice(device);
+            if (ret)
+                return ret;
+        }
+    }
+    return foundDevice;
 }

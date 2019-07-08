@@ -37,5 +37,6 @@ int gpuCloseDevice(struct GpuDevice *device);
 int gpuGetDevices(struct GpuDevice **gpuDevices, int *deviceCount, enum DeviceType type);
 int gpuGetDeviceCount(int type);
 int gpuFreeDevices(struct GpuDevice **devices);
+struct GpuDevice * gpuGetDeviceByBus(uint8_t domain, uint8_t bus, uint8_t dev, uint8_t func);
 
 #endif
