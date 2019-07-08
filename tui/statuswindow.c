@@ -26,6 +26,13 @@ static int statusControl(struct Window *win, int cmd, void *data)
 static int statusUpdate(struct Window *win, uint32_t flags)
 {
     int ret = 0;
+    struct Device *dev = getAcitveDevice();
+    if (!dev)
+        return 0;
+    mvwprintw(win->nwin, 1, 1, "%d:%s [%04x:%02x:%02x.%d]",
+        getContext()->activeDeviceID, dev->deviceName,
+        dev->domain, dev->bus, dev->dev, dev->func);
+    wrefresh(win->nwin);
     return ret;
 }
 

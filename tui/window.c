@@ -1,10 +1,10 @@
 #include <stdint.h>
-#include "windows.h"
+#include "window.h"
 
 #define WINDOW_DEVICE_HEIGHT  (6)
 #define WINDOW_TAB_WIDTH      (20)
-#define WINDOW_STATUS_HEIGH   (2)
-#define DEFAULT_WINDOW_SIZE   (95) /* 95  full window size */
+#define WINDOW_STATUS_HEIGH   (3)
+#define DEFAULT_WINDOW_SIZE   (80) /* 95  full window size */
 
 struct WindowContext *AllocWindowContext(void)
 {
@@ -13,6 +13,7 @@ struct WindowContext *AllocWindowContext(void)
 
 void FreeWindowContext(struct WindowContext *ctx)
 {
+    endwin();
     xFree(ctx);
 }
 
@@ -35,6 +36,7 @@ int InitNcurse(struct WindowContext *ctx)
     ctx->height = LINES * DEFAULT_WINDOW_SIZE / 100;
     ctx->startx = (COLS - ctx->width) / 2;
     ctx->starty = (LINES - ctx->height) / 2;
+    timeout(200);
 
     return 0;
 }
@@ -69,16 +71,80 @@ int InitWinLayout(struct WindowContext *ctx)
     return 0;
 }
 
+static void DrawMainWindowBorder(struct WindowContext *ctx)
+{
+    struct WindowLayout *deviceLayout = &ctx->wins[WIN_TYPE_DEVICE]->layout;
+    struct WindowLayout *tabLayout    = &ctx->wins[WIN_TYPE_TAB   ]->layout;
+    struct WindowLayout *mainLayout   = &ctx->wins[WIN_TYPE_MAIN  ]->layout;
+    struct WindowLayout *statusLayout = &ctx->wins[WIN_TYPE_STATUS]->layout;
+
+    attron(COLOR_PAIR(COLOR_DEAFULT));
+    /* */
+    for (int y = ctx->starty - 1; y < ctx->starty + ctx->height; y++)
+        for (int x = ctx->startx - 1; x < ctx->startx + ctx->width; x++)
+            mvaddch(y, x, ' ');
+    /* Main Window Border */
+    mvwhline(stdscr, ctx->starty - 1, ctx->startx - 1, 0, ctx->width + 2);
+    mvwhline(stdscr, ctx->starty + ctx->height, ctx->startx - 1 , 0, ctx->width + 2);
+    mvwvline(stdscr, ctx->starty - 1, ctx->startx - 1, 0, ctx->height + 2);
+    mvwvline(stdscr, ctx->starty - 1, ctx->startx + ctx->width, 0, ctx->height + 2);
+    mvwaddch(stdscr, ctx->starty - 1, ctx->startx - 1, ACS_ULCORNER);
+    mvwaddch(stdscr, ctx->starty + ctx->height, ctx->startx - 1, ACS_LLCORNER);
+    mvwaddch(stdscr, ctx->starty - 1, ctx->startx + ctx->width, ACS_URCORNER);
+    mvwaddch(stdscr, ctx->starty + ctx->height, ctx->startx + ctx->width, ACS_LRCORNER);
+    /* window split line */
+    mvwhline(stdscr, ctx->starty + deviceLayout->height, ctx->startx, 0, ctx->width);
+
+}
+
 int InitMainWindow(struct WindowContext *ctx)
 {
     struct Window *win = NULL;
 
+    if (ctx->hasColor) {
+        DrawMainWindowBorder(ctx);
+    }
     refresh();
+
     for (int i = 0 ; i < WIN_TYPE_COUNT; i++) {
         win = ctx->wins[i];
         win->nwin = newwin(win->layout.height, win->layout.width,
             ctx->starty + win->layout.starty, ctx->startx + win->layout.startx);
+        win->ctx = ctx;
+        if (ctx->hasColor)
+            wattrset(win->nwin, WindowGetColor(ctx, COLOR_DEAFULT));
+        winclear(win->nwin);
+        box(win->nwin, 0, 0);
+        wrefresh(win->nwin);
     }
+
+    return 0;
+}
+
+static struct Color colors[] = {
+    {0, 0,  0,  0},
+    {COLOR_DEAFULT,         COLOR_BLACK,    COLOR_WHITE,    A_NORMAL},
+    {COLOR_BACKGROUD,       COLOR_WHITE,    COLOR_BLACK,    A_NORMAL},
+    {COLOR_TITLE,           COLOR_BLUE,     COLOR_WHITE,    A_BOLD  },
+    {COLOR_TAB_ACITVE,      COLOR_WHITE,    COLOR_BLUE,     A_BOLD  },
+    {COLOR_TAB_INACTIVE,    COLOR_WHITE,    COLOR_BLUE,     A_NORMAL},
+    {COLOR_LABEL_NAME,      COLOR_BLACK,    COLOR_WHITE,    A_NORMAL},
+    {COLOR_LABEL_VALUE,     COLOR_BLUE,     COLOR_WHITE,    A_NORMAL},
+};
+
+int InitColor(struct WindowContext *ctx)
+{
+    if (!ctx->hasColor)
+        return 0;
+
+    ctx->color = colors;
+
+    for (int i = COLOR_DEAFULT; i < COLOR_COUNT; i++) {
+        init_pair(colors[i].pair, colors[i].fg, colors[i].bg);
+    }
+
+    if (ctx->hasColor)
+        wattrset(stdscr, COLOR_PAIR(COLOR_DEAFULT));
 
     return 0;
 }
@@ -97,6 +163,10 @@ int InitWindowContext(struct WindowContext *ctx)
 {
     int ret = 0;
 
+    ret = InitColor(ctx);
+    if (ret)
+        return ret;
+
     ret = SetupWindows(ctx);
     if (ret)
         return ret;
@@ -106,6 +176,10 @@ int InitWindowContext(struct WindowContext *ctx)
         return ret;
 
     ret = InitMainWindow(ctx);
+    if (ret)
+        return ret;
+
+    ret = WindowsInit(ctx);
     if (ret)
         return ret;
 
@@ -147,7 +221,7 @@ int WindowControl(struct Window *win, int cmd, void *data)
     return 0;
 }
 
-int WindowDispatchInput(struct WindowContext *ctx, int ch)
+int WindowsDispatchInput(struct WindowContext *ctx, int ch)
 {
     enum HANDLE_TYPE ret;
     struct Window *win = NULL;
@@ -161,3 +235,73 @@ int WindowDispatchInput(struct WindowContext *ctx, int ch)
     }
     return HANDLE_NONE;
 }
+
+int WindowsInit(struct WindowContext *ctx)
+{
+    int ret = 0;
+    struct Window *win = NULL;
+    for (int i = 0; i < WIN_TYPE_COUNT; i++) {
+        win = ctx->wins[i];
+        if (!win)
+            continue;
+        ret = WindowInit(win);
+        if (ret)
+            return ret;
+    }
+
+    return 0;
+}
+
+int WindowsExit(struct WindowContext *ctx)
+{
+    int ret = 0;
+    struct Window *win = NULL;
+    for (int i = 0; i < WIN_TYPE_COUNT; i++) {
+        win = ctx->wins[i];
+        if (!win)
+            continue;
+        ret = WindowExit(win);
+        if (ret)
+            return ret;
+    }
+    return 0;
+}
+
+int WindowsUpdate(struct WindowContext *ctx, uint32_t flags)
+{
+    int ret = 0;
+    struct Window *win = NULL;
+    for (int i = 0; i < WIN_TYPE_COUNT; i++) {
+        win = ctx->wins[i];
+        if (!win)
+            continue;
+        ret = WindowUpdate(win, flags);
+        if (ret)
+            return ret;
+    }
+    return 0;
+}
+
+void winclear(WINDOW* nwin)
+{
+    int x, y, ymax, xmax;
+    getmaxyx(nwin, ymax, xmax);
+    for (y = 0; y < ymax; y++)
+        for (x = 0; x < xmax; x++)
+            waddch(nwin, ' ');
+
+}
+
+uint32_t WindowGetColor(struct WindowContext *ctx, enum ColorType colorType)
+{
+    struct Color *color = ctx->color;
+
+    if (!color)
+        return 0;
+
+    if (colorType < COLOR_DEAFULT || colorType > COLOR_COUNT)
+        return 0;
+
+    return COLOR_PAIR(colorType) | color[colorType].attrs;
+}
+

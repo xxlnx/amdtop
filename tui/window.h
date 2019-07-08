@@ -38,11 +38,31 @@ enum WIN_TYPE {
     WIN_TYPE_COUNT,
 };
 
+enum ColorType {
+    COLOR_UNKNOW = 0,
+    COLOR_DEAFULT,
+    COLOR_BACKGROUD,
+    COLOR_TITLE,
+    COLOR_TAB_ACITVE,
+    COLOR_TAB_INACTIVE,
+    COLOR_LABEL_NAME,
+    COLOR_LABEL_VALUE,
+    COLOR_COUNT,
+};
+
+struct Color {
+    uint16_t pair;
+    uint16_t fg;
+    uint16_t bg;
+    uint32_t attrs;
+};
+
 struct WindowContext {
     uint32_t width, height;
     uint32_t startx, starty;
     struct Window *wins[WIN_TYPE_COUNT];
     bool hasColor;
+    struct Color *color;
 };
 
 enum HANDLE_TYPE {
@@ -68,6 +88,11 @@ int WindowExit(struct Window *win);
 int WindowUpdate(struct Window *win, uint32_t flags);
 int WindowInput(struct Window *win, int ch);
 int WindowControl(struct Window *win, int cmd, void *data);
-int WindowDispatchInput(struct WindowContext *ctx, int ch);
+int WindowsDispatchInput(struct WindowContext *ctx, int ch);
+int WindowsInit(struct WindowContext *ctx);
+int WindowsExit(struct WindowContext *ctx);
+int WindowsUpdate(struct WindowContext *ctx, uint32_t flags);
+uint32_t WindowGetColor(struct WindowContext *ctx, enum ColorType colorType);
+void winclear(WINDOW* nwin);
 
 #endif

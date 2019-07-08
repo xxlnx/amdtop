@@ -4,6 +4,8 @@ include_directories(${CURSES_INCLUDE_DIRS})
 set(srcs
     main.c
     window.c
+    device.c
+    context.c
     devicewindow.c
     tabwindow.c
     mainwindow.c
@@ -13,4 +15,7 @@ set(srcs
 add_executable(amdtop ${srcs})
 target_link_libraries(amdtop
     utils
+    pci
+    gpu
     ${CURSES_LIBRARIES})
+

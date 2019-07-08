@@ -1,4 +1,4 @@
-#include "windows.h"
+#include "window.h"
 
 static int mainInit(struct Window *win)
 {
