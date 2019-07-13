@@ -68,12 +68,11 @@ int main(int argc, char *argv[])
         ret, pciInfo.domain, pciInfo.bus, pciInfo.dev, pciInfo.func);
     INFO("ret = %d, vid = %04x, did = %04x, svid = %04x, sdid = %04x\n",
         ret, pciInfo.vid, pciInfo.did, pciInfo.sub_vid, pciInfo.sub_did);
-    char *vbios_version = NULL;
-    ret = gpuQueryVbiosVersion(&devices[0], &vbios_version);
+    char vbios_version[100];
+    ret = gpuQueryVbiosVersion(&devices[0], vbios_version);
     INFO("ret = %d, vbios version = %s\n", ret, vbios_version);
     if (ret)
         return ret;
-    xFree(vbios_version);
     ret = gpuQueryVBiosInfo(&devices[0], &vbiosInfo);
     INFO("ret = %d, vbios version = %s, imagelen = %d, header = %02x %02x\n",
         ret, vbiosInfo.vbios_version, vbiosInfo.imagelen, vbiosInfo.image[0], vbiosInfo.image[1]);
@@ -81,8 +80,8 @@ int main(int argc, char *argv[])
         return ret;
     xFree(vbiosInfo.image);
 
-    char *name = NULL;
-    ret = gpuQueryDeviceName(&devices[0], &name);
+    char name[100];
+    ret = gpuQueryDeviceName(&devices[0], name);
     INFO("ret = %d, name = %s\n", ret, name);
     if (ret)
         return ret;
