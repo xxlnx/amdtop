@@ -1,8 +1,14 @@
 #include "window.h"
+#include "tabinfo.h"
 
 static int mainInit(struct Window *win)
 {
     int ret = 0;
+    struct TabInfo *tabInfo = NULL;
+    tabInfo = getTabInfoByIndex(getContext()->activeTabID);
+    ret = TabinfoInit(tabInfo, win);
+    if (ret)
+        return ret;
     return ret;
 }
 

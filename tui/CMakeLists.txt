@@ -9,7 +9,10 @@ set(srcs
     devicewindow.c
     tabwindow.c
     mainwindow.c
-    statuswindow.c)
+    statuswindow.c
+    tabinfo.c
+    deviceinfo.c
+    aboutinfo.c)
 
 
 add_executable(amdtop ${srcs})

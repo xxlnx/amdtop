@@ -22,8 +22,11 @@
 #define DEBUG(...)
 #endif
 
+#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
+
 void* xAlloc(size_t size);
 void *xFree(void *ptr);
 void MemClear(void *buf, size_t size);
+
 
 #endif
