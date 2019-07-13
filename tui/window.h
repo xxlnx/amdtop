@@ -82,6 +82,7 @@ int InitNcurse(struct WindowContext *ctx);
 int InitWindowContext(struct WindowContext *ctx);
 int InitWinLayout(struct WindowContext *ctx);
 int InitMainWindow(struct WindowContext *ctx);
+int WindowsUpdateUi(struct WindowContext *ctx);
 
 int WindowInit(struct Window *win);
 int WindowExit(struct Window *win);

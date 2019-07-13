@@ -32,10 +32,6 @@ int InitNcurse(struct WindowContext *ctx)
     } else {
         ctx->hasColor = FALSE;
     }
-    ctx->width = COLS * DEFAULT_WINDOW_SIZE / 100;
-    ctx->height = LINES * DEFAULT_WINDOW_SIZE / 100;
-    ctx->startx = (COLS - ctx->width) / 2;
-    ctx->starty = (LINES - ctx->height) / 2;
     timeout(200);
 
     return 0;
@@ -43,10 +39,16 @@ int InitNcurse(struct WindowContext *ctx)
 
 int InitWinLayout(struct WindowContext *ctx)
 {
+    struct Window *win = NULL;
     struct WindowLayout *deviceLayout = &ctx->wins[WIN_TYPE_DEVICE]->layout;
     struct WindowLayout *tabLayout    = &ctx->wins[WIN_TYPE_TAB   ]->layout;
     struct WindowLayout *mainLayout   = &ctx->wins[WIN_TYPE_MAIN  ]->layout;
     struct WindowLayout *statusLayout = &ctx->wins[WIN_TYPE_STATUS]->layout;
+
+    ctx->width = COLS * DEFAULT_WINDOW_SIZE / 100;
+    ctx->height = LINES * DEFAULT_WINDOW_SIZE / 100;
+    ctx->startx = (COLS - ctx->width) / 2;
+    ctx->starty = (LINES - ctx->height) / 2;
 
     /* 1. first setup fix layout by ctx */
     deviceLayout->startx = 0;
@@ -67,6 +69,15 @@ int InitWinLayout(struct WindowContext *ctx)
     mainLayout->height = tabLayout->height;
     mainLayout->width = ctx->width - tabLayout->width;
     statusLayout->starty = ctx->height - statusLayout->height;
+
+    for (int i = 0 ; i < WIN_TYPE_COUNT; i++) {
+        win = ctx->wins[i];
+        if (win->nwin)
+            delwin(win->nwin);
+        win->nwin = newwin(win->layout.height, win->layout.width,
+                           ctx->starty + win->layout.starty, ctx->startx + win->layout.startx);
+        win->ctx = ctx;
+    }
 
     return 0;
 }
@@ -108,9 +119,6 @@ int InitMainWindow(struct WindowContext *ctx)
 
     for (int i = 0 ; i < WIN_TYPE_COUNT; i++) {
         win = ctx->wins[i];
-        win->nwin = newwin(win->layout.height, win->layout.width,
-            ctx->starty + win->layout.starty, ctx->startx + win->layout.startx);
-        win->ctx = ctx;
         if (ctx->hasColor)
             wattrset(win->nwin, WindowGetColor(ctx, COLOR_DEAFULT));
         winclear(win->nwin);
@@ -159,6 +167,24 @@ int SetupWindows(struct WindowContext *ctx)
     return 0;
 }
 
+int WindowsUpdateUi(struct WindowContext *ctx)
+{
+    int ret = 0;
+    ret = InitWinLayout(ctx);
+    if (ret)
+        return ret;
+
+    ret = InitMainWindow(ctx);
+    if (ret)
+        return ret;
+
+    ret = WindowsInit(ctx);
+    if (ret)
+        return ret;
+
+    return ret;
+}
+
 int InitWindowContext(struct WindowContext *ctx)
 {
     int ret = 0;
@@ -171,15 +197,7 @@ int InitWindowContext(struct WindowContext *ctx)
     if (ret)
         return ret;
 
-    ret = InitWinLayout(ctx);
-    if (ret)
-        return ret;
-
-    ret = InitMainWindow(ctx);
-    if (ret)
-        return ret;
-
-    ret = WindowsInit(ctx);
+    ret = WindowsUpdateUi(ctx);
     if (ret)
         return ret;
 
@@ -264,7 +282,7 @@ int WindowsExit(struct WindowContext *ctx)
         if (ret)
             return ret;
     }
-    return 0;
+    return -1;
 }
 
 int WindowsUpdate(struct WindowContext *ctx, uint32_t flags)

@@ -26,6 +26,12 @@ int main(int argc, char *argv[])
             case 'q':
                 goto out;
                 break;
+            case KEY_RESIZE:
+                erase();
+                ret = WindowsUpdateUi(wctx);
+                if (ret)
+                    return ret;
+                break;
             case ERR:
                 ret = WindowsUpdate(wctx, 0);
                 break;
