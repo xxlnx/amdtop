@@ -108,6 +108,6 @@ int gpuQueryMemInfo(struct GpuDevice *device, enum GpuMemType type, struct GpuMe
 int gpuQuerySensorInfo(struct GpuDevice *device, enum GpuSensorType type, struct GpuSensorInfo* sensorInfo);
 int gpuQueryVbiosVersion(struct GpuDevice *device, char *vbios_version);
 int gpuQueryVBiosInfo(struct GpuDevice *device, struct GpuVBiosInfo* vBiosInfo);
-int gpuQueryDeviceName(struct GpuDevice *device, char **name);
+int gpuQueryDeviceName(struct GpuDevice *device, char *name);
 
 #endif

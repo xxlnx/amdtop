@@ -345,13 +345,12 @@ failed:
 }
 
 #define AMDGPU_IDS_PATH     "../data/amdgpu.ids"
-int gpuQueryDeviceName(struct GpuDevice *device, char **name)
+int gpuQueryDeviceName(struct GpuDevice *device, char *name)
 {
     char buf[100] = {0};
     int a, b, c, len = 0, ret = 0;
     uint32_t vid, rid;
     struct GpuDeviceInfo deviceInfo;
-    *name = NULL;
 
     ret = gpuQueryDeviceInfo(device, &deviceInfo);
     if (ret)
@@ -371,8 +370,10 @@ int gpuQueryDeviceName(struct GpuDevice *device, char **name)
     }
 
     while (!feof(fp) && fscanf(fp, "%4x, %x, %[^,'\n']", &vid, &rid, buf) == 3) {
-        if(deviceInfo.amdgpu.device_id == vid && deviceInfo.amdgpu.chip_rev == rid)
-            *name = strdup(buf);
+        if(deviceInfo.amdgpu.device_id == vid && deviceInfo.amdgpu.chip_rev == rid) {
+            strcpy(name, buf);
+            break;
+        }
     }
 fallback:
     /* failed get name by amdgpu ids file */
@@ -380,7 +381,7 @@ fallback:
         memset(buf, 0, sizeof(buf));
         len = snprintf(buf, sizeof(buf), "%04x:%02x", deviceInfo.amdgpu.device_id, deviceInfo.amdgpu.chip_rev);
         buf[len] = '\0';
-        *name = strdup(buf);
+        strcpy(name, buf);
     }
 
     if (fp)
