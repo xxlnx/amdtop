@@ -1,8 +1,15 @@
-#include "windows.h"
+#include "window.h"
+#include "device.h"
+#include "context.h"
+
+static struct DeviceContext *dctx = NULL;
+static struct WindowContext *wctx = NULL;
 
 static int statusInit(struct Window *win)
 {
     int ret = 0;
+    dctx = getContext()->dctx;
+    wctx = getContext()->wctx;
     return ret;
 }
 
