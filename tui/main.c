@@ -1,8 +1,16 @@
 #include <stdio.h>
 #include <ncurses.h>
+#include <signal.h>
 #include "window.h"
 #include "device.h"
 #include "context.h"
+
+int requeset_exit = 0;
+
+static void signal_handler(int signal)
+{
+    requeset_exit = 1;
+}
 
 int main(int argc, char *argv[])
 {
@@ -13,6 +21,10 @@ int main(int argc, char *argv[])
     struct DeviceContext *dctx = NULL;
     struct WindowContext *wctx = NULL;
 
+    signal(SIGSEGV, signal_handler);
+    signal(SIGABRT, signal_handler);
+    signal(SIGPIPE, signal_handler);
+
     dctx = AllocDeviceContext();
     InitDeviceContext(dctx);
     context->dctx = dctx;
@@ -22,6 +34,8 @@ int main(int argc, char *argv[])
     InitWindowContext(wctx);
 
     while (ch = getch()) {
+        if (requeset_exit)
+            goto out;
         switch (ch) {
             case 'q':
                 goto out;
