@@ -7,10 +7,16 @@
 static struct DeviceContext *dctx = NULL;
 static struct WindowContext *wctx = NULL;
 
-static int updateActiveDevice(struct Window *win)
+static int updateActiveDevice(struct Window *win, int32_t index)
 {
     const uint32_t x = 1, y = 1;
-    mvwprintw(win->nwin, y + getContext()->activeDeviceID, x,  "*");
+    for (int i = 0 ; i < dctx->deviceCount; i ++){
+        if (i == index)
+            mvwprintwc(win->nwin, y + i, x, COLOR_DEAFULT, "*");
+        else
+            mvwprintwc(win->nwin, y + i, x, COLOR_DEAFULT, " ");
+    }
+    wrefresh(win->nwin);
 }
 
 static int deviceInit(struct Window *win)
@@ -27,18 +33,15 @@ static int deviceInit(struct Window *win)
        dev = getDeviceByIndex(dctx, i);
        if (!dev)
            return 0;
-       mvwprintw(win->nwin, line, 2, " %d: %-20s", i, dev->deviceName);
+       mvwprintwc(win->nwin, line, 2, COLOR_DEAFULT, " %d: %-20s", i, dev->deviceName);
        MemClear(buf, sizeof(buf));
        size = snprintf(buf, MAX_NAME_SIZE, "[%04x:%02x:%02x:%d]", dev->domain, dev->bus, dev->dev, dev->func);
        int xmax = getmaxx(win->nwin);
-       mvwprintw(win->nwin, line, xmax - size - 1, "%s", buf);
+       mvwprintwc(win->nwin, line, xmax - size - 1, COLOR_LABEL_VALUE,  "%s", buf);
        line++;
     }
-    updateActiveDevice(win);
 
-    if (wctx->hasColor)
-        wattroff(win->nwin, WindowGetColor(wctx, COLOR_DEAFULT));
-
+    updateActiveDevice(win, getContext()->activeDeviceID);
     wrefresh(win->nwin);
 
     return ret;
@@ -53,26 +56,27 @@ static int deviceExit(struct Window *win)
 static int deviceHandleInput(struct Window *win, int ch)
 {
     enum HANDLE_TYPE handleType = HANDLE_HANDLED;
+    int32_t deviceId = getContext()->activeDeviceID;
 
     if (dctx->deviceCount <= 1)
         return HANDLE_NONE;
 
     switch (ch) {
         case KEY_F(3):
-            getContext()->activeDeviceID--;
-            if (getContext()->activeDeviceID < 0)
-                getContext()->activeDeviceID = 0;
-            updateActiveDevice(win);
+            if (--deviceId <= 0)
+                deviceId = 0;
             break;
         case KEY_F(4):
-            getContext()->activeDeviceID++;
-            if (getContext()->activeDeviceID >= dctx->deviceCount)
-                getContext()->activeDeviceID = dctx->deviceCount - 1;
-            updateActiveDevice(win);
+            if (++deviceId >= dctx->deviceCount)
+                deviceId = dctx->deviceCount - 1;
             break;
         default:
             handleType = HANDLE_NONE;
             break;
+    }
+    if (deviceId != getContext()->activeDeviceID){
+        updateActiveDevice(win, deviceId);
+        getContext()->activeDeviceID = deviceId;
     }
 
     return handleType;
