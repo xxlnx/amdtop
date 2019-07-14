@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <string.h>
 #include "window.h"
 
 #define WINDOW_DEVICE_HEIGHT  (6)
@@ -138,6 +139,10 @@ static struct Color colors[] = {
     {COLOR_TAB_INACTIVE,    COLOR_WHITE,    COLOR_BLUE,     A_NORMAL},
     {COLOR_LABEL_NAME,      COLOR_BLACK,    COLOR_WHITE,    A_NORMAL},
     {COLOR_LABEL_VALUE,     COLOR_BLUE,     COLOR_WHITE,    A_NORMAL},
+    {COLOR_BLUE_COLOR,      COLOR_BLUE,     COLOR_WHITE,    A_NORMAL},
+    {COLOR_YELLOW_COLOR,    COLOR_YELLOW,   COLOR_WHITE,    A_NORMAL},
+    {COLOR_GREEN_COLOR,     COLOR_GREEN,    COLOR_WHITE,    A_NORMAL},
+    {COLOR_RED_COLOR,       COLOR_RED,      COLOR_WHITE,    A_NORMAL},
 };
 
 int InitColor(struct WindowContext *ctx)
@@ -308,6 +313,55 @@ void winclear(WINDOW* nwin)
         for (x = 0; x < xmax; x++)
             waddch(nwin, ' ');
 
+}
+int mvwprintwc(WINDOW *win, int y, int x, enum ColorType colorType, const char *fmt, ...)
+{
+    int ret = 0;
+    va_list args;
+    va_start(args, fmt);
+
+    wmove(win, y, x);
+
+    wattron(win, COLOR_PAIR(colorType) | colors[colorType].attrs);
+    ret = vwprintw(win, fmt, args);
+    wattroff(win, COLOR_PAIR(colorType) | colors[colorType].attrs);
+
+    va_end(args);
+
+    return ret;
+}
+
+int mvwprintw2c(WINDOW *win, int y, int x, const char *fmt, ...)
+{
+    int ret = 0;
+    char *s1, *s2, *f1, *f2, *ptr = strdup(fmt);
+    enum ColorType colorType;
+    va_list args;
+    const size_t ptr_len = strlen(ptr) + 1;
+
+    /* Retrive args */
+    va_start(args, fmt);
+    f2 = strstr(fmt, ":") + 1;
+    f1 = strncat(strtok(ptr, ": "), ":", ptr_len);
+    s1 = va_arg(args, char *);
+    s2 = va_arg(args, char *);
+
+    /* Print label name */
+    wmove(win, y, x);
+    colorType = COLOR_LABEL_NAME;
+        wattron(win, COLOR_PAIR(colorType) | colors[colorType].attrs);
+    ret += wprintw(win, f1, s1);
+    xFree(f1);
+        wattroff(win, COLOR_PAIR(colorType) | colors[colorType].attrs);
+
+    /* Print label value */
+    colorType = COLOR_LABEL_VALUE;
+        wattron(win, COLOR_PAIR(colorType) | colors[colorType].attrs);
+    ret += wprintw(win, f2, s2);
+        wattroff(win, COLOR_PAIR(colorType) | colors[colorType].attrs);
+
+    va_end(args);
+    return ret;
 }
 
 uint32_t WindowGetColor(struct WindowContext *ctx, enum ColorType colorType)

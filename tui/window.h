@@ -47,6 +47,10 @@ enum ColorType {
     COLOR_TAB_INACTIVE,
     COLOR_LABEL_NAME,
     COLOR_LABEL_VALUE,
+    COLOR_RED_COLOR,
+    COLOR_BLUE_COLOR,
+    COLOR_YELLOW_COLOR,
+    COLOR_GREEN_COLOR,
     COLOR_COUNT,
 };
 
@@ -95,5 +99,7 @@ int WindowsExit(struct WindowContext *ctx);
 int WindowsUpdate(struct WindowContext *ctx, uint32_t flags);
 uint32_t WindowGetColor(struct WindowContext *ctx, enum ColorType colorType);
 void winclear(WINDOW* nwin);
+int mvwprintwc(WINDOW *win, int y, int x, enum ColorType colorType, const char *fmt, ...);
+int mvwprintw2c(WINDOW *win, int y, int x, const char *fmt, ...);
 
 #endif
