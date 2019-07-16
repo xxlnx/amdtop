@@ -109,5 +109,7 @@ int gpuQuerySensorInfo(struct GpuDevice *device, enum GpuSensorType type, struct
 int gpuQueryVbiosVersion(struct GpuDevice *device, char *vbios_version);
 int gpuQueryVBiosInfo(struct GpuDevice *device, struct GpuVBiosInfo* vBiosInfo);
 int gpuQueryDeviceName(struct GpuDevice *device, char *name);
+char* gpuGetFamilyType(int32_t familyType);
+char *gpuGetVramType(int32_t type);
 
 #endif

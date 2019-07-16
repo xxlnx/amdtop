@@ -389,3 +389,71 @@ fallback:
 
     return ret;
 }
+
+char *gpuGetVramType(int32_t type)
+{
+    char *name = NULL;
+    switch (type){
+        case AMDGPU_VRAM_TYPE_UNKNOWN:
+            name = "unknow";
+            break;
+        case AMDGPU_VRAM_TYPE_GDDR1:
+            name = "GDDR1";
+            break;
+        case AMDGPU_VRAM_TYPE_DDR2:
+            name = "GDDR2";
+            break;
+        case AMDGPU_VRAM_TYPE_GDDR3:
+            name = "GDDR2";
+            break;
+        case AMDGPU_VRAM_TYPE_GDDR4:
+            name = "GDDR4";
+            break;
+        case AMDGPU_VRAM_TYPE_GDDR5:
+            name ="GDDR5";
+            break;
+        case AMDGPU_VRAM_TYPE_HBM:
+            name = "HBM";
+            break;
+        case AMDGPU_VRAM_TYPE_DDR3:
+            name = "DDR3";
+            break;
+        case 8:
+            name = "GDDR6";
+            break;
+        default:
+            name = "unknow";
+            break;
+    }
+    return name;
+}
+
+char* gpuGetFamilyType(int32_t familyType)
+{
+    char *name = NULL;
+    switch (familyType) {
+        case AMDGPU_FAMILY_SI:
+            name = "SI (Hainan, etc)";
+            break;
+        case AMDGPU_FAMILY_CI:
+            name = "CI (Bonaire, Hawaii)";
+            break;
+        case AMDGPU_FAMILY_VI:
+            name = "VI (Iceland, Tonga)";
+            break;
+        case AMDGPU_FAMILY_CZ:
+            name = "CZ (Carrizo, Stoney)";
+            break;
+        case AMDGPU_FAMILY_AI:
+            name = "AI (Vega10)";
+            break;
+        case AMDGPU_FAMILY_RV:
+            name = "RV (Raven)";
+            break;
+        default:
+            name = "unknow";
+            break;
+    }
+    return name;
+}
+
