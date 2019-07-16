@@ -12,6 +12,7 @@ set(srcs
     statuswindow.c
     tabinfo.c
     deviceinfo.c
+    driverinfo.c
     aboutinfo.c)
 
 
