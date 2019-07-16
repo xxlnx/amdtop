@@ -111,7 +111,7 @@ static void DrawMainWindowBorder(struct WindowContext *ctx)
 
 int InitMainWindow(struct WindowContext *ctx)
 {
-    struct Window *win = NULL;
+    int ret = 0;
 
     if (ctx->hasColor) {
         DrawMainWindowBorder(ctx);
@@ -119,12 +119,9 @@ int InitMainWindow(struct WindowContext *ctx)
     refresh();
 
     for (int i = 0 ; i < WIN_TYPE_COUNT; i++) {
-        win = ctx->wins[i];
-        if (ctx->hasColor)
-            wattrset(win->nwin, WindowGetColor(ctx, COLOR_DEAFULT));
-        winclear(win->nwin);
-        box(win->nwin, 0, 0);
-        wrefresh(win->nwin);
+        ret = WindowClear(ctx->wins[i]);
+        if (ret)
+            return ret;
     }
 
     return 0;
@@ -304,6 +301,19 @@ int WindowsUpdate(struct WindowContext *ctx, uint32_t flags)
     }
     return 0;
 }
+
+int WindowClear(struct Window *win)
+{
+    int ret = 0;
+    if (win->ctx->hasColor)
+        wattrset(win->nwin, COLOR_PAIR(COLOR_DEAFULT)| colors[COLOR_DEAFULT].attrs);
+    wclear(win->nwin);
+    winclear(win->nwin);
+    box(win->nwin, 0, 0);
+
+    return ret;
+}
+
 
 void winclear(WINDOW* nwin)
 {

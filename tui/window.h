@@ -97,6 +97,7 @@ int WindowsDispatchInput(struct WindowContext *ctx, int ch);
 int WindowsInit(struct WindowContext *ctx);
 int WindowsExit(struct WindowContext *ctx);
 int WindowsUpdate(struct WindowContext *ctx, uint32_t flags);
+int WindowClear(struct Window *win);
 uint32_t WindowGetColor(struct WindowContext *ctx, enum ColorType colorType);
 void winclear(WINDOW* nwin);
 int mvwprintwc(WINDOW *win, int y, int x, enum ColorType colorType, const char *fmt, ...);
