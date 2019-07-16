@@ -85,11 +85,6 @@ int InitWinLayout(struct WindowContext *ctx)
 
 static void DrawMainWindowBorder(struct WindowContext *ctx)
 {
-    struct WindowLayout *deviceLayout = &ctx->wins[WIN_TYPE_DEVICE]->layout;
-    struct WindowLayout *tabLayout    = &ctx->wins[WIN_TYPE_TAB   ]->layout;
-    struct WindowLayout *mainLayout   = &ctx->wins[WIN_TYPE_MAIN  ]->layout;
-    struct WindowLayout *statusLayout = &ctx->wins[WIN_TYPE_STATUS]->layout;
-
     attron(COLOR_PAIR(COLOR_DEAFULT));
     /* */
     for (int y = ctx->starty - 1; y < ctx->starty + ctx->height; y++)
@@ -104,8 +99,7 @@ static void DrawMainWindowBorder(struct WindowContext *ctx)
     mvwaddch(stdscr, ctx->starty + ctx->height, ctx->startx - 1, ACS_LLCORNER);
     mvwaddch(stdscr, ctx->starty - 1, ctx->startx + ctx->width, ACS_URCORNER);
     mvwaddch(stdscr, ctx->starty + ctx->height, ctx->startx + ctx->width, ACS_LRCORNER);
-    /* window split line */
-    mvwhline(stdscr, ctx->starty + deviceLayout->height, ctx->startx, 0, ctx->width);
+    attroff(COLOR_PAIR(COLOR_DEAFULT));
 
 }
 
@@ -116,13 +110,13 @@ int InitMainWindow(struct WindowContext *ctx)
     if (ctx->hasColor) {
         DrawMainWindowBorder(ctx);
     }
-    refresh();
 
     for (int i = 0 ; i < WIN_TYPE_COUNT; i++) {
         ret = WindowClear(ctx->wins[i]);
         if (ret)
             return ret;
     }
+    refresh();
 
     return 0;
 }
