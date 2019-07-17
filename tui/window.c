@@ -335,34 +335,32 @@ int mvwprintwc(WINDOW *win, int y, int x, enum ColorType colorType, const char *
     return ret;
 }
 
-int mvwprintw2c(WINDOW *win, int y, int x, const char *fmt, ...)
+int mvwprintw2c(WINDOW *win, int y, int x, const char *fmt, const char *label, ...)
 {
     int ret = 0;
-    char *s1, *s2, *f1, *f2, *ptr = strdup(fmt);
+    char *f1, *f2, *ptr = strdup(fmt);
     enum ColorType colorType;
     va_list args;
     const size_t ptr_len = strlen(ptr) + 1;
 
     /* Retrive args */
-    va_start(args, fmt);
+    va_start(args, label);
     f2 = strstr(fmt, ":") + 1;
-    f1 = strncat(strtok(ptr, ": "), ":", ptr_len);
-    s1 = va_arg(args, char *);
-    s2 = va_arg(args, char *);
+    f1 = strncat(strtok(ptr, ":"), ":", ptr_len);
 
     /* Print label name */
     wmove(win, y, x);
     colorType = COLOR_LABEL_NAME;
-        wattron(win, COLOR_PAIR(colorType) | colors[colorType].attrs);
-    ret += wprintw(win, f1, s1);
+    wattron(win, COLOR_PAIR(colorType) | colors[colorType].attrs);
+    ret += wprintw(win, f1, label);
     xFree(f1);
         wattroff(win, COLOR_PAIR(colorType) | colors[colorType].attrs);
 
-    /* Print label value */
-    colorType = COLOR_LABEL_VALUE;
-        wattron(win, COLOR_PAIR(colorType) | colors[colorType].attrs);
-    ret += wprintw(win, f2, s2);
-        wattroff(win, COLOR_PAIR(colorType) | colors[colorType].attrs);
+     /* Print label value */
+     colorType = COLOR_LABEL_VALUE;
+         wattron(win, COLOR_PAIR(colorType) | colors[colorType].attrs);
+     ret += vw_printw(win, f2, args);
+         wattroff(win, COLOR_PAIR(colorType) | colors[colorType].attrs);
 
     va_end(args);
     return ret;

@@ -101,6 +101,6 @@ int WindowClear(struct Window *win);
 uint32_t WindowGetColor(struct WindowContext *ctx, enum ColorType colorType);
 void winclear(WINDOW* nwin);
 int mvwprintwc(WINDOW *win, int y, int x, enum ColorType colorType, const char *fmt, ...);
-int mvwprintw2c(WINDOW *win, int y, int x, const char *fmt, ...);
+int mvwprintw2c(WINDOW *win, int y, int x, const char *fmt, const char *label, ...);
 
 #endif
