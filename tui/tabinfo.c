@@ -5,10 +5,12 @@
 extern struct TabInfo aboutInfo;
 extern struct TabInfo deviceInfo;
 extern struct TabInfo driverInfo;
+extern struct TabInfo biosInfo;
 
 static struct TabInfo * tabinfoList [] = {
     &deviceInfo,
     &driverInfo,
+    &biosInfo,
     &aboutInfo,
 };
 

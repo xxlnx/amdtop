@@ -13,6 +13,7 @@ set(srcs
     tabinfo.c
     deviceinfo.c
     driverinfo.c
+    biosinfo.c
     aboutinfo.c)
 
 
