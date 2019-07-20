@@ -9,6 +9,9 @@
 struct WindowContext;
 struct Window;
 
+#define MIN(x, y) ((x) < (y) ? (x) : (y))
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
+
 struct WindowOps {
     int (*init)(struct Window *win);
     int (*exit)(struct Window *win);
@@ -74,6 +77,21 @@ enum HANDLE_TYPE {
     HANDLE_HANDLED = (1 << 0),
 };
 
+#define BAR_NAME_SIZE    (80)
+struct WindowBar {
+    char name[BAR_NAME_SIZE];
+    char unit[BAR_NAME_SIZE];
+    uint32_t y, x, width;
+    WINDOW *nwin;
+    uint32_t max;
+    uint32_t value;
+    uint32_t percent;
+    uint32_t bar_start;
+    uint32_t label_start;
+    size_t last_label_size;
+    enum ColorType colorType;
+};
+
 extern struct Window DeviceWindow;
 extern struct Window TabWindow;
 extern struct Window MainWindow;
@@ -102,5 +120,12 @@ uint32_t WindowGetColor(struct WindowContext *ctx, enum ColorType colorType);
 void winclear(WINDOW* nwin);
 int mvwprintwc(WINDOW *win, int y, int x, enum ColorType colorType, const char *fmt, ...);
 int mvwprintw2c(WINDOW *win, int y, int x, const char *fmt, const char *label, ...);
+
+int barCreate(WINDOW *nwin, struct WindowBar *bar,
+              const char *name, const char *unit, uint32_t y, uint32_t x, uint32_t width);
+int barSetMaxValue(struct WindowBar *bar, uint32_t max);
+int barSetValue(struct WindowBar *bar, uint32_t value);
+int barUpdateLabel(struct WindowBar *bar);
+bool WindowCheckSize(struct Window *win, uint32_t height, uint32_t width);
 
 #endif

@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <string.h>
+#include <errno.h>
 #include "window.h"
 
 #define WINDOW_DEVICE_HEIGHT  (6)
@@ -377,5 +378,97 @@ uint32_t WindowGetColor(struct WindowContext *ctx, enum ColorType colorType)
         return 0;
 
     return COLOR_PAIR(colorType) | color[colorType].attrs;
+}
+
+int barSetMaxValue(struct WindowBar *bar, uint32_t max)
+{
+    int ret = 0;
+    bar->max = max;
+    return ret;
+}
+
+int barUpdateLabel(struct WindowBar *bar)
+{
+    int ret = 0;
+    char buff[40];
+    size_t size = 0;
+
+    size = snprintf(buff, 40, " %5d/%-5d %-5s", bar->value, bar->max, bar->unit);
+    buff[size] = '\0';
+    ret = mvwprintwc(bar->nwin, bar->y, bar->label_start, bar->colorType, "%s", buff);
+    if (size < bar->last_label_size) {
+        for (int i = 0; i < bar->last_label_size - size; i++)
+            mvwprintwc(bar->nwin, bar->y, getcurx(bar->nwin), COLOR_DEAFULT, " ");
+    }
+    bar->last_label_size = size;
+    return  ret;
+}
+
+int barSetValue(struct WindowBar *bar, uint32_t value)
+{
+    int32_t ret = 0;
+    enum ColorType colorType = COLOR_DEAFULT;
+    uint32_t val = MIN(value, bar->max);
+    int32_t percent = val * 100 / bar->max;
+    int32_t count = bar->width * percent / 100;
+
+    colorType = percent < 40 ? COLOR_GREEN_COLOR :
+                percent < 70 ? COLOR_YELLOW_COLOR: COLOR_RED_COLOR;
+
+    for (int i = 0 ; i < bar->width - 4; i++) {
+        mvwprintwc(bar->nwin, bar->y, bar->bar_start + i, colorType, "%c",
+                   i < count ? '|' : ' ');
+    }
+    mvwprintwc(bar->nwin, bar->y, getcurx(bar->nwin), colorType, "%3d%%", percent);
+
+    bar->value = val;
+    bar->percent = percent;
+    bar->colorType = colorType;
+
+    ret = barUpdateLabel(bar);
+    if (ret)
+        return ret;
+
+    return ret;
+}
+
+int barCreate(WINDOW *nwin, struct WindowBar *bar,
+    const char *name, const char *unit, uint32_t y, uint32_t x, uint32_t width)
+{
+    int ret = 0;
+
+    if (!bar)
+        return -EINVAL;
+
+    MemClear(bar, sizeof(*bar));
+    strcpy(bar->name, name);
+    strcpy(bar->unit, unit);
+
+    bar->y = y;
+    bar->x = x;
+    bar->width = width;
+    bar->nwin = nwin;
+
+    mvwprintwc(nwin, bar->y, bar->x, COLOR_DEAFULT, "%-5s :[", bar->name);
+    bar->bar_start = getcurx(nwin);
+    mvwprintwc(nwin, bar->y, getcurx(nwin) + bar->width, COLOR_DEAFULT, "]");
+    bar->label_start = getcurx(nwin);
+
+    ret = barSetMaxValue(bar, 100);
+    if (ret)
+        return ret;
+    ret = barSetValue(bar, 0);
+    if (ret)
+        return ret;
+
+    return ret;
+}
+
+bool WindowCheckSize(struct Window *win, uint32_t height, uint32_t width)
+{
+    struct WindowLayout  *layout = &win->layout;
+    if (layout->height < height + 2 || layout->width < width + 2)
+        return false;
+    return true;
 }
 
