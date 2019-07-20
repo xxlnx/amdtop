@@ -14,6 +14,7 @@ set(srcs
     deviceinfo.c
     driverinfo.c
     biosinfo.c
+    stateinfo.c
     aboutinfo.c)
 
 
