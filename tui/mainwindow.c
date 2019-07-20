@@ -32,6 +32,10 @@ static int mainControl(struct Window *win, int cmd, void *data)
 static int mainUpdate(struct Window *win, uint32_t flags)
 {
     int ret = 0;
+    struct TabInfo *tabInfo = getTabInfoByIndex(getContext()->activeTabID);
+    ret = TabinfoUpdate(tabInfo, win);
+    if (ret)
+        return ret;
     return ret;
 }
 
