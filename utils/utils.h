@@ -2,6 +2,7 @@
 #define __UTILS_H__
 
 #include <stdio.h>
+#include <stdint.h>
 
 #define _LOG(prefix, fmt, ...) \
     fprintf(stdout, prefix fmt, ##__VA_ARGS__)
@@ -28,5 +29,8 @@ void* xAlloc(size_t size);
 void *xFree(void *ptr);
 void MemClear(void *buf, size_t size);
 
+uint32_t getProcMemInfo(const char *name);
+uint32_t getTotalMem(void);
+uint32_t getFreeMem(void);
 
 #endif
