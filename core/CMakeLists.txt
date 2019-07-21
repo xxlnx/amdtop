@@ -3,6 +3,7 @@ set(libsrc
     gpudevice.c
     drmhelper.c
     gpuinfo.c
+    gpumode.c
     atombios.c)
 add_library(gpu SHARED ${libsrc})
 target_link_libraries(gpu
