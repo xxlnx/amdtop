@@ -56,11 +56,17 @@ int InitDevice(struct Device *device)
        MemClear(device->driverName, MAX_NAME_SIZE);
    } else {
        device->driverisLoaded = true;
-       device->gpuDevice = gpuGetDeviceByBus(device->pdev->domain,
+       device->gpuDevice = gpuGetDeviceByBus(DEVICE_TYPE_RENDER,
+                                             device->pdev->domain,
                                              device->pdev->bus,
                                              device->pdev->dev,
                                              device->pdev->func);
-       if (!device->gpuDevice)
+       device->gpuCardDevice = gpuGetDeviceByBus(DEVICE_TYPE_CARD,
+                                                 device->pdev->domain,
+                                                 device->pdev->bus,
+                                                 device->pdev->dev,
+                                                 device->pdev->func);
+       if (!device->gpuDevice || !device->gpuCardDevice)
            return -EACCES;
    }
 

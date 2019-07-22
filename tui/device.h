@@ -18,7 +18,7 @@ struct Device {
     uint32_t id;
     struct DeviceContext *ctx;
     struct pci_dev *pdev;
-    struct GpuDevice *gpuDevice;
+    struct GpuDevice *gpuDevice, *gpuCardDevice;
     enum DeviceVendorType vendorType;
     bool driverisLoaded;
     char deviceName[MAX_NAME_SIZE];
