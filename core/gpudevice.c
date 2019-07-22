@@ -120,14 +120,14 @@ int gpuGetDeviceCount(int type)
     return count;
 }
 
-struct GpuDevice * gpuGetDeviceByBus(uint8_t domain, uint8_t bus, uint8_t dev, uint8_t func)
+struct GpuDevice * gpuGetDeviceByBus(enum DeviceType deviceType, uint8_t domain, uint8_t bus, uint8_t dev, uint8_t func)
 {
-    struct GpuDevice *device= NULL, *devices = NULL, *foundDevice;
+    struct GpuDevice *device= NULL, *devices = NULL, *foundDevice = NULL;
     struct GpuPciInfo pciInfo = {0};
     int deviceCount = 0;
     int ret = 0;
 
-    ret = gpuGetDevices(&devices, &deviceCount, DEVICE_TYPE_RENDER);
+    ret = gpuGetDevices(&devices, &deviceCount, deviceType);
     if (ret)
         return NULL;
 
@@ -144,7 +144,7 @@ struct GpuDevice * gpuGetDeviceByBus(uint8_t domain, uint8_t bus, uint8_t dev, u
         } else {
             ret = gpuCloseDevice(device);
             if (ret)
-                return ret;
+                return NULL;
         }
     }
     return foundDevice;
