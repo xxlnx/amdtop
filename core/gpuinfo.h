@@ -100,6 +100,30 @@ struct GpuVBiosInfo {
     uint32_t  offset; /* not used */
 };
 
+
+enum GpuHwIpType {
+    GPU_HW_IP_GFX = 0,
+    GPU_HW_IP_COMPUTE,
+    GPU_HW_IP_DMA,
+    GPU_HW_IP_UVD,
+    GPU_HW_IP_VCE,
+    GPU_HW_IP_UVD_ENC,
+    GPU_HW_IP_VCN_DEC,
+    GPU_HW_IP_VCN_ENC,
+    GPU_HW_IP_NUM
+};
+
+struct GpuHwIPInfo {
+    struct GpuDevice *device;
+    enum GpuHwIpType iptype;
+    uint32_t inst;
+    uint32_t version_major, version_minor;
+    uint64_t  capabilities;
+    uint32_t ib_start_aligment;
+    uint32_t ib_size_alignment;
+    uint32_t avaiable_rings;
+};
+
 int gpuQueryPciInfo(struct GpuDevice *device,  struct GpuPciInfo *pciInfo);
 int gpuQueryDriverInfo(struct GpuDevice *device, struct GpuDriverInfo *driverInfo);
 int gpuQueryDeviceInfo(struct GpuDevice *device, struct GpuDeviceInfo *deviceInfo);
@@ -109,6 +133,8 @@ int gpuQuerySensorInfo(struct GpuDevice *device, enum GpuSensorType type, struct
 int gpuQueryVbiosVersion(struct GpuDevice *device, char *vbios_version);
 int gpuQueryVBiosInfo(struct GpuDevice *device, struct GpuVBiosInfo* vBiosInfo);
 int gpuQueryDeviceName(struct GpuDevice *device, char *name);
+int gpuQueryHwIpCount(struct GpuDevice *device, enum GpuHwIpType hwIpType, uint32_t *count);
+int gpuQueryHwIpInfo(struct GpuDevice *device, enum GpuHwIpType hwIpType, uint32_t inst, struct GpuHwIPInfo *hwIpInfo);
 char* gpuGetFamilyType(int32_t familyType);
 char *gpuGetVramType(int32_t type);
 

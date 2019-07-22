@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <malloc.h>
 #include <string.h>
+#include <libdrm/amdgpu_drm.h>
 
 int gpuQueryDriverInfo(struct GpuDevice *device, struct GpuDriverInfo *driverInfo)
 {
@@ -386,6 +387,51 @@ fallback:
 
     if (fp)
 	    fclose(fp);
+
+    return ret;
+}
+
+int gpuQueryHwIpCount(struct GpuDevice *device, enum GpuHwIpType hwIpType, uint32_t *count)
+{
+    int ret = 0;
+
+    struct drm_amdgpu_info request = {0};
+
+    request.return_pointer = (uint64_t)count;
+    request.return_size = sizeof(*count);
+    request.query = AMDGPU_INFO_HW_IP_COUNT;
+    request.query_hw_ip.type = hwIpType;
+
+    ret = gpuIoctl(device->fd, DRM_IOCTL_AMDGPU_INFO, &request);
+
+    return ret;
+}
+
+int gpuQueryHwIpInfo(struct GpuDevice *device, enum GpuHwIpType hwIpType, uint32_t inst, struct GpuHwIPInfo *hwIpInfo)
+{
+    struct drm_amdgpu_info request = {0};
+    struct drm_amdgpu_info_hw_ip info_hw_ip = {0};
+    int ret = 0;
+
+    request.return_pointer = &info_hw_ip;
+    request.return_size = sizeof(info_hw_ip);
+    request.query = AMDGPU_INFO_HW_IP_INFO;
+    request.query_hw_ip.type = hwIpType;
+    request.query_hw_ip.ip_instance = inst;
+
+    ret = gpuIoctl(device->fd, DRM_IOCTL_AMDGPU_INFO, &request);
+    if (ret)
+        return ret;
+
+    hwIpInfo->device = device;
+    hwIpInfo->iptype = hwIpType;
+    hwIpInfo->inst = inst;
+    hwIpInfo->version_major = info_hw_ip.hw_ip_version_major;
+    hwIpInfo->version_minor = info_hw_ip.hw_ip_version_minor;
+    hwIpInfo->avaiable_rings = info_hw_ip.available_rings;
+    hwIpInfo->capabilities = info_hw_ip.capabilities_flags;
+    hwIpInfo->ib_size_alignment = info_hw_ip.ib_size_alignment;
+    hwIpInfo->ib_start_aligment = info_hw_ip.ib_start_alignment;
 
     return ret;
 }
