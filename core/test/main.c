@@ -85,6 +85,22 @@ int main(int argc, char *argv[])
     INFO("ret = %d, name = %s\n", ret, name);
     if (ret)
         return ret;
+
+    struct GpuHwIPInfo ipInfo;
+    uint32_t ipcount = 0;
+    for (int i = 0; i < GPU_HW_IP_NUM; i ++) {
+        ret = gpuQueryHwIpCount(&devices[0], i, &ipcount);
+        if (ret)
+            return ret;
+        INFO("=== ip type = %d, count = %d ===\n", i, ipcount);
+        for (int j = 0; j < ipcount; j++) {
+            ret = gpuQueryHwIpInfo(&devices[0], i, j, &ipInfo);
+            if (ret)
+                return ret;
+            INFO("+ ip type = %d, inst = %d, %d.%d cap = %#x, rings = %#x\n", i, ipInfo.inst,
+                ipInfo.version_major, ipInfo.version_minor, ipInfo.capabilities, ipInfo.avaiable_rings);
+        }
+    }
     ret = gpuFreeDevices(&devices);
     if (ret)
         return ret;
