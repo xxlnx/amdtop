@@ -21,7 +21,7 @@ set(srcs
 add_executable(amdtop ${srcs})
 target_link_libraries(amdtop
     utils
-    pci
+    pciaccess
     gpu
     ${CURSES_LIBRARIES})
 
