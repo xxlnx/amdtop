@@ -155,7 +155,7 @@ static int tabStateInfoInit(struct TabInfo *info, struct Window *win)
     ret = barSetMaxValue(getSensorBar(BarType_GpuLoad), 100);
     if (ret)
         return  ret;
-    ret = barSetMaxValue(getSensorBar(BarType_GpuPower), 350);
+    ret = barSetMaxValue(getSensorBar(BarType_GpuPower), 150);
     if (ret)
         return  ret;
     ret = barSetMaxValue(getSensorBar(BarType_VRAM), ALIGN(vramInfo.total >> 20, 1024));
