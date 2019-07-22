@@ -41,10 +41,10 @@ static int tabDeviceInfoInit(struct TabInfo *info, struct Window *win)
         return ret;
 
     x = win->layout.width / 20;
-    mvwprintw2c(nwin, line++, x, "%-20s: %s", "Name:", device->deviceName);
+    mvwprintw2c(nwin, line++, x, "%-20s: %s", "Name", device->deviceName);
     mvwprintw2c(nwin, line++, x, "%-20s: %s", "Famliy", gpuGetFamilyType(amdgpuinfo->family));
-    mvwprintw2c(nwin, line++, x, "%-20s: %#x", "VendorID:", device->pdev->vendor_id);
-    mvwprintw2c(nwin, line++, x, "%-20s: %#x", "DeviceID:", device->pdev->device_id);
+    mvwprintw2c(nwin, line++, x, "%-20s: %04x:%04x", "PCI ID", device->vendor_id, device->device_id);
+    mvwprintw2c(nwin, line++, x, "%-20s: %04x:%04x", "PCI SUBID", device->sub_vendor_id, device->sub_device_id);
     mvwprintw2c(nwin, line++, x, "%-20s: %#x", "RevisionID", amdgpuinfo->chip_rev);
     mvwprintw2c(nwin, line++, x, "%-20s: %#x", "ExternalID", amdgpuinfo->external_rev);
     mvwprintw2c(nwin, line++, x, "%-20s: %d",  "CUs Active", amdgpuinfo->cu_active_number);
