@@ -16,6 +16,7 @@ set(srcs
     biosinfo.c
     stateinfo.c
     chipinfo.c
+    firmware.c
     aboutinfo.c)
 
 
