@@ -148,6 +148,7 @@ int gpuQueryFWInfo(struct GpuDevice *device, enum GpuFwType type, uint32_t inst,
     if (ret)
         return ret;
 
+    fwInfo->type = type;
     fwInfo->feature = firmware.feature;
     fwInfo->version = firmware.ver;
     fwInfo->inst = inst;

@@ -40,6 +40,7 @@ struct GpuHardInfo {
 
 struct GpuFwInfo {
     struct GpuDevice *device;
+    enum GpuFwType type;
     uint32_t inst;
     uint32_t index;
     uint32_t version;
