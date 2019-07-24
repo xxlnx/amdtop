@@ -1,29 +1,30 @@
+#include <errno.h>
 #include "tabinfo.h"
 
 static struct Device *current_device = NULL;
-static char *default_parse_firmware(struct GpuFwInfo *fwInfo, char *buf)
+static int default_parse_firmware(struct GpuFwInfo *fwInfo, char *ver_buf, char* fea_buf)
 {
-    size_t  size = 0;
+    size_t ver_size = 0, fea_size = 0;
 
-    if (!fwInfo || !buf)
-        return NULL;
+    if (!fwInfo || !ver_buf || !fea_buf)
+        return -EINVAL;
 
     switch (fwInfo->type) {
         case FwType_SMC:
-            size = sprintf(buf, "version: %d.%d.%d \t(0x%08x), feature: 0x%08x",
+            ver_size = sprintf(ver_buf, "%d.%d.%d \t0x%08x",
                            (fwInfo->version >> 16) & 0xffff,
                            (fwInfo->version >> 8) & 0xff,
                            (fwInfo->version) & 0xff,
-                           fwInfo->version, fwInfo->feature);
+                           fwInfo->version);
             break;
         case FwType_UVD:
         case FwType_VCE:
-            size = sprintf(buf, "version: %d.%d.%d.%d \t(0x%08x), feature: 0x%08x",
+            ver_size = sprintf(ver_buf, "%d.%d.%d.%d \t0x%08x",
                            (fwInfo->version >> 24) & 0xff,
                            (fwInfo->version >> 16) & 0xff,
                            (fwInfo->version >> 8) & 0xff,
                            (fwInfo->version) & 0xff,
-                           fwInfo->version, fwInfo->feature);
+                           fwInfo->version);
             break;
         case FwType_CE:
         case FwType_MC:
@@ -31,37 +32,43 @@ static char *default_parse_firmware(struct GpuFwInfo *fwInfo, char *buf)
         case FwType_PFP:
         case FwType_RLC:
         case FwType_SDMA:
-            size = sprintf(buf, "version: %d \t\t(0x%08x), feature: 0x%08x",
-                            (fwInfo->version) & 0xff,
-                           fwInfo->version, fwInfo->feature);
+            ver_size = sprintf(ver_buf, "%d \t0x%08x",
+                            (fwInfo->version) & 0xff, fwInfo->version);
             break;
         case FwType_SOS:
-            size = sprintf(buf, "version: %d.%d \t(0x%08x), feature: 0x%08x",
+            ver_size = sprintf(ver_buf, "%d.%d \t0x%08x",
                            (fwInfo->version >> 16) & 0xffff,
                            (fwInfo->version) & 0xffff,
-                           fwInfo->version, fwInfo->feature);
+                           fwInfo->version);
             break;
         case FwType_ASD:
-            size = sprintf(buf, "version: %d.%d.%d \t(0x%08x), feature: 0x%08x",
+            ver_size = sprintf(ver_buf, "%d.%d.%d 0x%08x",
                            (fwInfo->version >> 16) & 0xffff,
                            (fwInfo->version >> 8) & 0xff,
                            (fwInfo->version) & 0xff,
-                           fwInfo->version, fwInfo->feature);
+                           fwInfo->version);
             break;
         default:
-            size = sprintf(buf, "version: 0x%08x, feature: 0x%08x", fwInfo->version, fwInfo->feature);
+            ver_size = sprintf(ver_buf, "0x%08x", fwInfo->version);
+            fea_size = sprintf(fea_buf, "0x%08x", fwInfo->feature);
             break;
     }
 
-    buf[size] = '\0';
+    if (!ver_size)
+        ver_size = sprintf(ver_buf, "0x%08x", fwInfo->version);
+    if (!fea_size)
+        fea_size = sprintf(fea_buf, "0x%08x", fwInfo->feature);
 
-    return buf;
+    ver_buf[ver_size] = '\0';
+    fea_buf[fea_size] = '\0';
+
+    return 0;
 }
 
 struct firmware_info {
     char *name;
     enum GpuFwType fwType;
-    char *(*parse_version) (struct GpuFwInfo *fwInfo, char *buf);
+    int (*parse_version) (struct GpuFwInfo *fwInfo, char *ver_buf, char *fea_buf);
     struct GpuFwInfo fwInfo;
 };
 
@@ -107,7 +114,8 @@ static int tabFirmwareInfoInit(struct TabInfo *info, struct Window *win)
     int x = 15, info_x = 20;
     int line = 2;
     struct firmware_info *fw_info = NULL;
-    char buff[MAX_NAME_SIZE] = {0};
+    char ver_buff[MAX_NAME_SIZE] = {0};
+    char fea_buff[MAX_NAME_SIZE] = {0};
 
     ret = getFirmwareInfo();
     if (ret)
@@ -115,8 +123,10 @@ static int tabFirmwareInfoInit(struct TabInfo *info, struct Window *win)
 
     for (int i = 0; i < FW_INFO_COUNT; i++) {
         fw_info = &fw_infos[i];
-        mvwprintw2c(nwin, line++, x, "%s: %s", "Firmware", fw_info->name);
-        mvwprintw2c(nwin, line++, info_x, "%s: %s", "Info", fw_info->parse_version(&fw_info->fwInfo, buff));
+        mvwprintw2c(nwin, line++, x, "%s: %s", "Type", fw_info->name);
+        ret = fw_info->parse_version(&fw_info->fwInfo, ver_buff, fea_buff);
+        mvwprintw2c(nwin, line, info_x, "%s: %s", "Version", ver_buff);
+        mvwprintw2c(nwin, line++, info_x + 40, "%s: %s", "Feature", fea_buff);
     }
 
     wrefresh(nwin);
