@@ -344,6 +344,9 @@ int mvwprintw2c(WINDOW *win, int y, int x, const char *fmt, const char *label, .
     va_list args;
     const size_t ptr_len = strlen(ptr) + 1;
 
+    if (y >= getmaxy(win) - 1)
+        return 0;
+
     /* Retrive args */
     va_start(args, label);
     f2 = strstr(fmt, ":") + 1;
