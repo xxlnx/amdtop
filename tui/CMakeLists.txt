@@ -17,6 +17,7 @@ set(srcs
     stateinfo.c
     chipinfo.c
     firmware.c
+    systeminfo.c
     aboutinfo.c)
 
 

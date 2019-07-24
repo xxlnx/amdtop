@@ -9,8 +9,10 @@ extern struct TabInfo biosInfo;
 extern struct TabInfo stateInfo;
 extern struct TabInfo chipInfo;
 extern struct TabInfo firmwareInfo;
+extern struct TabInfo systemInfo;
 
 static struct TabInfo * tabinfoList [] = {
+    &systemInfo,
     &deviceInfo,
     &driverInfo,
     &chipInfo,
