@@ -70,17 +70,17 @@ static int tabHandleInput(struct Window *win, int ch)
         /* need clear and refresh main window */
         preInfo = getTabInfoByIndex(getContext()->activeTabID);
         curInfo = getTabInfoByIndex(tabid);
-        ret = TabinfoExit(preInfo, mainWin);
+        ret = WindowExit(mainWin);
         if (ret)
             return ret;
+        getContext()->activeTabID = tabid;
         ret = WindowClear(mainWin);
         if (ret)
             return ret;
-        ret = TabinfoInit(curInfo, mainWin);
+        ret = WindowInit(mainWin);
         if (ret)
             return ret;
         updateActiveTab(win, tabid);
-        getContext()->activeTabID = tabid;
     }
 
     return handleType;

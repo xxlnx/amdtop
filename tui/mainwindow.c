@@ -16,7 +16,7 @@ static int mainInit(struct Window *win)
             break;
         default:
             if (!DeviceDriverisLoaded(device)) {
-                mvwprintwc(nwin, win->layout.height / 2, (win->layout.width - 30), COLOR_RED_COLOR,
+                mvwprintwc(nwin, win->layout.height / 2, (win->layout.width - 30) / 2, COLOR_RED_COLOR,
                     "%10s: Driver is not Loaded", tabInfo->labelName);
                 wrefresh(nwin);
                 return 0;
@@ -34,6 +34,9 @@ static int mainInit(struct Window *win)
 static int mainExit(struct Window *win)
 {
     int ret = 0;
+    struct TabInfo *tabInfo = NULL;
+    tabInfo = getTabInfoByIndex(getContext()->activeTabID);
+    TabinfoExit(tabInfo, win);
     return ret;
 }
 
@@ -52,9 +55,13 @@ static int mainUpdate(struct Window *win, uint32_t flags)
 {
     int ret = 0;
     struct TabInfo *tabInfo = getTabInfoByIndex(getContext()->activeTabID);
-    ret = TabinfoUpdate(tabInfo, win);
-    if (ret)
-        return ret;
+
+    if (DeviceDriverisLoaded(getAcitveDevice())) {
+        ret = TabinfoUpdate(tabInfo, win);
+        if (ret)
+            return ret;
+    }
+
     return ret;
 }
 
