@@ -97,13 +97,19 @@ static int tabDriverInfoInit(struct TabInfo *info, struct Window *win)
     mvwprintw2c(nwin, line++, x, "%-20s: %s", "Driver Name:", gpuDriverInfo.driver_name);
     mvwprintw2c(nwin, line++, x, "%-20s: %s", "Driver Desc:", gpuDriverInfo.desc);
     mvwprintw2c(nwin, line++, x, "%-20s: %s", "Driver Date:", gpuDriverInfo.date);
-    mvwprintw2c(nwin, line++, x, "%-20s: %d:%d", "Driver Version:", gpuDriverInfo.version_major, gpuDriverInfo.version_minor);
-    mvwprintw2c(nwin, line++, x, "%-20s: %s", "DKMS Driver:", modAmdgpu.version);
-    mvwprintw2c(nwin, line++, x, "%-20s: %s", "AMDKCL Driver:", modAmdkcl.version);
+    mvwprintw2c(nwin, line++, x, "%-20s: %d.%d", "Driver Version:", gpuDriverInfo.version_major, gpuDriverInfo.version_minor);
+
+    if (isDkms)
+        mvwprintw2c(nwin, line++, x, "%-20s: %s", "DKMS:", modAmdgpu.version);
+    else
+        mvwprintw2c(nwin, line++, x, "%-20s: %s", "Build-In:", modAmdgpu.version);
+
     if (isDkms) {
-        mvwprintw2c(nwin, line++, x, "%-20s: %s", "DKMS SRC Version:", modAmdgpu.srcversion);
-        mvwprintw2c(nwin, line++, x, "%-20s: %s", "AMDKCL SRC Version:", modAmdkcl.srcversion);
+        mvwprintw2c(nwin, line++, x, "%-20s: %s", "KCL Driver:", modAmdkcl.version);
+        mvwprintw2c(nwin, line++, x, "%-20s: %s", "DKMS SRCVer:", modAmdgpu.srcversion);
+        mvwprintw2c(nwin, line++, x, "%-20s: %s", "KCL  SRCVer:", modAmdkcl.srcversion);
     }
+
     wrefresh(nwin);
 
     return ret;
