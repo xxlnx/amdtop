@@ -1,2 +1,2 @@
 set(libsrc utils.c)
-add_library(utils SHARED ${libsrc})
+add_library(utils STATIC ${libsrc})
