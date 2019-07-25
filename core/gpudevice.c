@@ -1,4 +1,3 @@
-#include <sys/types.h>
 #include <stdint.h>
 #include <drm/drm.h>
 #include <errno.h>
@@ -6,6 +5,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <sys/sysmacros.h>
 #include <dirent.h>
 #include <string.h>
 #include "gpudevice.h"
