@@ -1,6 +1,8 @@
-#include <asm-generic/errno-base.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdio.h>
 #include "device.h"
 #include "utils/utils.h"
 
@@ -55,7 +57,9 @@ int InitDevice(struct Device *device)
     device->irq = pdev->irq;
     device->pci_class = pdev->device_class;
 
-    strcpy(device->deviceName, pci_device_get_device_name(pdev));
+    ret = DeviceGetDeviceName(device, device->deviceName);
+    if (ret)
+        return ret;
     strcpy(device->vendorName, pci_device_get_vendor_name(pdev));
 
     ret = DeviceGetDriverName(device, device->driverName, &size);
@@ -193,3 +197,65 @@ int DeviceGetDriverName(struct Device *device, char *driverName, size_t *outsize
 
     return 0;
 }
+
+#define AMDGPU_IDS_PATH     "/opt/amdgpu/share/libdrm/amdgpu.ids"
+int getDeviceNameFromAmdgpuIDS(struct Device* device, char *name)
+{
+    char buf[100] = {0};
+    int a, b, c;
+    int ret = 0;
+
+    uint32_t device_id= device->device_id;
+    uint32_t revision_id = device->revision_id;
+    uint32_t did = 0, rid = 0;
+
+    if (device->vendor_id != 0x1002)
+        return -EINVAL;
+
+    if (access(AMDGPU_IDS_PATH, O_RDONLY))
+        return -EINVAL;
+
+    FILE *fp = fopen(AMDGPU_IDS_PATH, "r");
+    if (!fp)
+        return -EINVAL;
+
+    while(fgets(buf, sizeof(buf), fp)) {
+        if(buf[0] == '#') continue;
+        break;
+    }
+
+    if (fscanf(fp, "%d.%d.%d\n", &a, &b, &c) != 3) {
+        ret = -EINVAL;
+        goto failed;
+    }
+
+    ret = -EINVAL;
+    while (!feof(fp) && fscanf(fp, "%4x, %x, %[^,'\n']", &did, &rid, buf) == 3) {
+        if (did == device_id && rid == revision_id) {
+            strcpy(name, buf);
+            ret = 0;
+            break;
+        }
+    }
+
+failed:
+    if (fp)
+        fclose(fp);
+
+    return ret;
+}
+
+int DeviceGetDeviceName(struct Device *device, char *deviceName)
+{
+
+    if (getDeviceNameFromAmdgpuIDS(device, deviceName)) {
+        if (pci_device_get_device_name(device->pdev))
+            strcpy(deviceName, pci_device_get_device_name(device->pdev));
+        else
+            sprintf(deviceName, "unknow device %08x:%08x.%02d",
+                device->vendor_id,device->device_id, device->revision_id);
+    }
+
+    return 0;
+}
+

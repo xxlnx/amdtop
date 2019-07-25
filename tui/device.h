@@ -44,6 +44,7 @@ struct Device* AllocDevice(struct DeviceContext *dctx, struct pci_device *pdev);
 void FreeDevice(struct Device *device);
 struct Device *getDeviceByIndex(struct DeviceContext *dctx, uint32_t index);
 int DeviceGetSysPath(struct Device *device, char* path, size_t *outsize);
-int DeviceGetDeviceName(struct Device *device, char *deviceName, size_t *outsize);
+int DeviceGetDeviceName(struct Device *device, char *deviceName);
 int DeviceGetDriverName(struct Device *device, char *driverName, size_t *outsize);
+int getDeviceNameFromAmdgpuIDS(struct Device* device, char *name);
 #endif
