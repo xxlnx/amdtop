@@ -57,31 +57,37 @@ int InitDevice(struct Device *device)
     device->irq = pdev->irq;
     device->pci_class = pdev->device_class;
 
+    device->driverisLoaded = false;
+
     ret = DeviceGetDeviceName(device, device->deviceName);
     if (ret)
         return ret;
     strcpy(device->vendorName, pci_device_get_vendor_name(pdev));
 
-    ret = DeviceGetDriverName(device, device->driverName, &size);
-    if (ret) {
-        device->driverisLoaded = false;
-        MemClear(device->driverName, MAX_NAME_SIZE);
-        return ret;
-    }
 
-    device->driverisLoaded = true;
-    device->gpuDevice = gpuGetDeviceByBus(DEVICE_TYPE_RENDER,
-                                          device->pdev->domain,
-                                          device->pdev->bus,
-                                          device->pdev->dev,
-                                          device->pdev->func);
-    device->gpuCardDevice = gpuGetDeviceByBus(DEVICE_TYPE_CARD,
-                                              device->pdev->domain,
-                                              device->pdev->bus,
-                                              device->pdev->dev,
-                                              device->pdev->func);
-    if (!device->gpuDevice || !device->gpuCardDevice)
-        return -EACCES;
+    if (pci_device_has_kernel_driver(pdev)) {
+        ret = DeviceGetDriverName(device, device->driverName, &size);
+        if (ret) {
+            device->driverisLoaded = false;
+            return ret;
+        }
+
+        device->gpuDevice = gpuGetDeviceByBus(DEVICE_TYPE_RENDER,
+                                              pdev->domain,
+                                              pdev->bus,
+                                              pdev->dev,
+                                              pdev->func);
+        device->gpuCardDevice = gpuGetDeviceByBus(DEVICE_TYPE_CARD,
+                                                  pdev->domain,
+                                                  pdev->bus,
+                                                  pdev->dev,
+                                                  pdev->func);
+
+        if (!device->gpuDevice || !device->gpuCardDevice)
+            return -EACCES;
+
+        device->driverisLoaded = true;
+    }
 
     return ret;
 }
