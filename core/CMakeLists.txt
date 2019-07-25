@@ -5,7 +5,7 @@ set(libsrc
     gpuinfo.c
     gpumode.c
     atombios.c)
-add_library(gpu SHARED ${libsrc})
+add_library(gpu STATIC ${libsrc})
 target_link_libraries(gpu
     utils)
 
