@@ -88,6 +88,7 @@ static int tabDeviceInfoUpdate(struct TabInfo *info, struct Window *win)
 }
 
 struct TabInfo deviceInfo = {
+    .id = TabID_DEVICE,
     .name = "deviceInfo",
     .labelName = "Device",
     .init = tabDeviceInfoInit,

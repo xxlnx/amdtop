@@ -122,6 +122,7 @@ static int tabDriverInfoUpdate(struct TabInfo *info, struct Window *win)
 }
 
 struct TabInfo driverInfo = {
+    .id = TabID_DRIVER,
     .name = "DriverInfo",
     .labelName = "Driver",
     .init = tabDriverInfoInit,

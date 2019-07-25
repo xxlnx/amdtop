@@ -30,6 +30,7 @@ static int tabAboutInfoUpdate(struct TabInfo *info, struct Window *win)
 }
 
 struct TabInfo aboutInfo = {
+    .id = TabID_ABOUT,
     .name = "aboutInfo",
     .labelName = "About",
     .init = tabAboutInfoInit,

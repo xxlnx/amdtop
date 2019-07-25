@@ -107,6 +107,7 @@ static int tabChipInfoUpdate(struct TabInfo *info, struct Window *win)
 }
 
 struct TabInfo chipInfo = {
+    .id = TabID_CHIP,
     .name = "chipInfo",
     .labelName = "Chip",
     .init = tabChipInfoInit,

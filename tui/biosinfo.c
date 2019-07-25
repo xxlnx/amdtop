@@ -217,6 +217,7 @@ static int tabBiosInfoUpdate(struct TabInfo *info, struct Window *win)
 }
 
 struct TabInfo biosInfo = {
+    .id = TabID_VBIOS,
     .name = "BiosInfo",
     .labelName = "Bios",
     .init = tabBiosInfoInit,

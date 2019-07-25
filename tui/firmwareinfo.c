@@ -146,6 +146,7 @@ static int tabFirmwareInfoUpdate(struct TabInfo *info, struct Window *win)
 }
 
 struct TabInfo firmwareInfo = {
+    .id = TabID_FIRMWARE,
     .name = "firwmare",
     .labelName = "Firmware",
     .init = tabFirmwareInfoInit,

@@ -6,6 +6,19 @@
 #include "device.h"
 #include "context.h"
 
+enum TabID {
+    TabID_UNKNOW = 0,
+    TabID_SYSTEM,
+    TabID_DEVICE,
+    TabID_DRIVER,
+    TabID_STAT,
+    TabID_FIRMWARE,
+    TabID_CHIP,
+    TabID_VBIOS,
+    TabID_ABOUT,
+    TabID_COUNT,
+};
+
 struct TabInfo {
     int32_t id;
     const char *name;

@@ -144,6 +144,7 @@ static int tabSystemInfoUpdate(struct TabInfo *info, struct Window *win)
 }
 
 struct TabInfo systemInfo = {
+    .id = TabID_SYSTEM,
     .name = "systemInfo",
     .labelName = "System",
     .init = tabSystemInfoInit,

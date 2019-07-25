@@ -28,8 +28,7 @@ static int tabInit(struct Window *win)
     gTabCount = getTabInfoCount();
     for (int i = 0; i < gTabCount; i++) {
         tabInfo = getTabInfoByIndex(i);
-        tabInfo->id = i;
-        mvwprintw(win->nwin, line, 3, "%d. %s", tabInfo->id + 1, tabInfo->labelName);
+        mvwprintw(win->nwin, line, 3, "%d. %s", i + 1, tabInfo->labelName);
         line++;
     }
     wrefresh(win->nwin);

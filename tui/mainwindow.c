@@ -5,10 +5,29 @@ static int mainInit(struct Window *win)
 {
     int ret = 0;
     struct TabInfo *tabInfo = NULL;
+    struct Device *device = getAcitveDevice();
+    WINDOW *nwin = win->nwin;
+
     tabInfo = getTabInfoByIndex(getContext()->activeTabID);
+
+    switch (tabInfo->id) {
+        case TabID_SYSTEM:
+        case TabID_ABOUT:
+            break;
+        default:
+            if (!DeviceDriverisLoaded(device)) {
+                mvwprintwc(nwin, win->layout.height / 2, (win->layout.width - 30), COLOR_RED_COLOR,
+                    "%10s: Driver is not Loaded", tabInfo->labelName);
+                wrefresh(nwin);
+                return 0;
+            }
+            break;
+    }
+
     ret = TabinfoInit(tabInfo, win);
     if (ret)
         return ret;
+
     return ret;
 }
 

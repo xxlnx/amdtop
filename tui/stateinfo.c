@@ -200,8 +200,9 @@ static int tabStateInfoUpdate(struct TabInfo *info, struct Window *win)
 }
 
 struct TabInfo stateInfo = {
+    .id = TabID_STAT,
     .name = "StateInfo",
-    .labelName = "Monitor",
+    .labelName = "Stat",
     .init = tabStateInfoInit,
     .exit = tabStateInfoExit,
     .update = tabStateInfoUpdate,
