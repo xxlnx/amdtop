@@ -2,7 +2,7 @@
 #define __ATOMBIOS_H__
 
 #include <stdint.h>
-#include "atomfirmware.h"
+#include "import/atomfirmware.h"
 #include "stddef.h"
 
 struct atombios {

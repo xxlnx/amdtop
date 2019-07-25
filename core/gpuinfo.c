@@ -4,7 +4,6 @@
 #include <errno.h>
 #include <malloc.h>
 #include <string.h>
-#include <libdrm/amdgpu_drm.h>
 
 int gpuQueryDriverInfo(struct GpuDevice *device, struct GpuDriverInfo *driverInfo)
 {

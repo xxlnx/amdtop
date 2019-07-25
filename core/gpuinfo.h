@@ -1,8 +1,9 @@
 #ifndef __GPU_INFO_H__
 #define __GPU_INFO_H__
 
-#include <libdrm/amdgpu_drm.h>
 #include "gpudevice.h"
+#include "import/drm.h"
+#include "import/amdgpu_drm.h"
 
 enum GpuMemType {
     MemType_VRAM,

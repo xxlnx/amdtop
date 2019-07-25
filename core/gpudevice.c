@@ -7,7 +7,6 @@
 #include <sys/sysmacros.h>
 #include <dirent.h>
 #include <string.h>
-#include <drm/drm.h>
 #include "gpudevice.h"
 #include "drmhelper.h"
 #include "utils/utils.h"
