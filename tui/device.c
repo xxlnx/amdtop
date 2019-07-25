@@ -265,3 +265,14 @@ int DeviceGetDeviceName(struct Device *device, char *deviceName)
     return 0;
 }
 
+bool DeviceDriverisLoaded(struct Device *device)
+{
+    if (!device)
+        return false;
+
+    if (device->driverisLoaded)
+        return  true;
+
+    return false;
+}
+

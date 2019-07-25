@@ -1,13 +1,18 @@
 #include "tabinfo.h"
 
-struct GpuDeviceInfo gpuDeviceInfo;
-struct GpuMemInfo vramInfo, visibleInfo, gttInfo;
+static struct GpuDeviceInfo gpuDeviceInfo;
+static struct GpuMemInfo vramInfo, visibleInfo, gttInfo;
+static struct Device *current_device = NULL;
+
 static int getAllInfo(void)
 {
-    static int first = true;
-    struct Device * device = getAcitveDevice();
     int ret = 0;
-    if (!first)
+    struct Device * device = getAcitveDevice();
+
+    if (device == current_device)
+        return 0;
+
+    if (!DeviceDriverisLoaded(device))
         return 0;
 
     ret = gpuQueryDeviceInfo(device->gpuDevice, &gpuDeviceInfo);
@@ -23,7 +28,7 @@ static int getAllInfo(void)
     if (ret)
         return ret;
 
-    first = false;
+    current_device = device;
     return ret;
 }
 

@@ -47,4 +47,5 @@ int DeviceGetSysPath(struct Device *device, char* path, size_t *outsize);
 int DeviceGetDeviceName(struct Device *device, char *deviceName);
 int DeviceGetDriverName(struct Device *device, char *driverName, size_t *outsize);
 int getDeviceNameFromAmdgpuIDS(struct Device* device, char *name);
+bool DeviceDriverisLoaded(struct Device *device);
 #endif
