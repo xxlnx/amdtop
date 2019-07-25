@@ -126,6 +126,8 @@ static int tabSystemInfoInit(struct TabInfo *info, struct Window *win)
         dmi_info = &id_infos[i];
         mvwprintw2c(nwin, line++, x, "%-15s: %s", dmi_info->label, dmi_info->value);
     }
+    mvwprintw2c(nwin, line++, x, "%-15s: %s", "Driver",
+        DeviceDriverisLoaded(getAcitveDevice()) ? getAcitveDevice()->driverName : "Un-loaded");
 
     wrefresh(nwin);
     return ret;
