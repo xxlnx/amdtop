@@ -346,52 +346,6 @@ failed:
     return ret;
 }
 
-#define AMDGPU_IDS_PATH     "../data/amdgpu.ids"
-int gpuQueryDeviceName(struct GpuDevice *device, char *name)
-{
-    char buf[100] = {0};
-    int a, b, c, len = 0, ret = 0;
-    uint32_t vid, rid;
-    struct GpuDeviceInfo deviceInfo;
-
-    ret = gpuQueryDeviceInfo(device, &deviceInfo);
-    if (ret)
-        return ret;
-
-    FILE *fp = fopen(AMDGPU_IDS_PATH, "rb+");
-    if (!fp)
-	    goto fallback;
-
-    while(fgets(buf, sizeof(buf), fp)) {
-        if(buf[0] == '#') continue;
-        break;
-    }
-
-    if (fscanf(fp, "%d.%d.%d\n", &a, &b, &c) != 3) {
-	    goto fallback;
-    }
-
-    while (!feof(fp) && fscanf(fp, "%4x, %x, %[^,'\n']", &vid, &rid, buf) == 3) {
-        if(deviceInfo.amdgpu.device_id == vid && deviceInfo.amdgpu.chip_rev == rid) {
-            strcpy(name, buf);
-            break;
-        }
-    }
-fallback:
-    /* failed get name by amdgpu ids file */
-    if (*name == NULL) {
-        memset(buf, 0, sizeof(buf));
-        len = snprintf(buf, sizeof(buf), "%04x:%02x", deviceInfo.amdgpu.device_id, deviceInfo.amdgpu.chip_rev);
-        buf[len] = '\0';
-        strcpy(name, buf);
-    }
-
-    if (fp)
-	    fclose(fp);
-
-    return ret;
-}
-
 int gpuQueryHwIpCount(struct GpuDevice *device, enum GpuHwIpType hwIpType, uint32_t *count)
 {
     int ret = 0;

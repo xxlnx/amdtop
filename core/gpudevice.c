@@ -1,5 +1,4 @@
 #include <stdint.h>
-#include <drm/drm.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -8,6 +7,7 @@
 #include <sys/sysmacros.h>
 #include <dirent.h>
 #include <string.h>
+#include <drm/drm.h>
 #include "gpudevice.h"
 #include "drmhelper.h"
 #include "utils/utils.h"

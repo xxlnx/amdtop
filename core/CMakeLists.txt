@@ -10,4 +10,3 @@ target_link_libraries(gpu
     utils)
 
 add_subdirectory(test)
-INSTALL(FILES amdgpu.ids DESTINATION ${CMAKE_BINARY_DIR}/build/data)
