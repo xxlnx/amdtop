@@ -2,6 +2,7 @@
 
 static struct GpuDeviceInfo gpuDeviceInfo;
 static struct GpuMemInfo vramInfo, visibleInfo, gttInfo;
+static struct GpuCapInfo capInfo;
 static struct Device *current_device = NULL;
 
 static int getAllInfo(void)
@@ -25,6 +26,9 @@ static int getAllInfo(void)
     if (ret)
         return ret;
     ret = gpuQueryMemInfo(device->gpuDevice, MemType_VISIBLE, &visibleInfo);
+    if (ret)
+        return ret;
+    ret = gpuQueryGpuCap(device->gpuDevice, &capInfo);
     if (ret)
         return ret;
 
@@ -53,6 +57,7 @@ static int tabDeviceInfoInit(struct TabInfo *info, struct Window *win)
     mvwprintw2c(nwin, line++, x, "%-20s: %#x", "RevisionID", device->revision_id);
     mvwprintw2c(nwin, line++, x, "%-20s: %#x", "ChipRevID", amdgpuinfo->chip_rev);
     mvwprintw2c(nwin, line++, x, "%-20s: %#x", "ExternalID", amdgpuinfo->external_rev);
+    mvwprintw2c(nwin, line++, x, "%-20s: %s", "Capability", capInfo.cap_str);
     mvwprintw2c(nwin, line++, x, "%-20s: %d",  "CUs Active", amdgpuinfo->cu_active_number);
     mvwprintw2c(nwin, line++, x, "%-20s: %d",  "CUs Per Shader", amdgpuinfo->num_cu_per_sh);
     mvwprintw2c(nwin, line++, x, "%-20s: %d",  "Shader Engines", amdgpuinfo->num_shader_engines);
