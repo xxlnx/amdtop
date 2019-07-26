@@ -113,6 +113,7 @@ enum GpuHwIpType {
     GPU_HW_IP_UVD_ENC,
     GPU_HW_IP_VCN_DEC,
     GPU_HW_IP_VCN_ENC,
+    GPU_HW_IP_VCN_JPEG,
     GPU_HW_IP_NUM
 };
 
