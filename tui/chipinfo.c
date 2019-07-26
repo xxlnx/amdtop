@@ -20,6 +20,7 @@ struct ip_info ipinfos[] = {
     {"UVD_ENC", GPU_HW_IP_UVD_ENC},
     {"VCN_DEC", GPU_HW_IP_VCN_DEC},
     {"VCN_ENC", GPU_HW_IP_VCN_ENC},
+    {"VCN_JPEG", GPU_HW_IP_VCN_ENC},
 };
 
 #define IP_INFO_COUNT ARRAY_SIZE(ipinfos)
@@ -74,18 +75,23 @@ static int tabChipInfoInit(struct TabInfo *info, struct Window *win)
 
     for (int i = 0; i < IP_INFO_COUNT; i++) {
         ipInfo = &ipinfos[i];
-        mvwprintw2c(nwin, line++, x, "%5s : %d instance", ipInfo->name, ipInfo->count);
+        mvwprintw2c(nwin, line, x, "%10s : %d", ipInfo->name, ipInfo->count);
+        mvwprintwc(nwin, line++, getcurx(nwin) + 1, COLOR_DEAFULT, "inst(s)");
         if (ipInfo->count == 1) {
             hwIpInfo = &ipInfo->hwIpInfos[0];
-            mvwprintw2c(nwin, line++, info_x, "%-10s: %d.%d", "Version", hwIpInfo->version_major, hwIpInfo->version_minor);
-            mvwprintw2c(nwin, line++, info_x, "%-10s: %d", "Rings", calc_ring_count(hwIpInfo->avaiable_rings));
-            mvwprintw2c(nwin, line++, info_x, "%-10s: start %5d, size %5d", "IB Align", hwIpInfo->ib_start_aligment, hwIpInfo->ib_size_alignment);
+            mvwprintw2c(nwin, line++, info_x, "%-15s: %d.%d", "Version", hwIpInfo->version_major, hwIpInfo->version_minor);
+            mvwprintw2c(nwin, line++, info_x, "%-15s: %d", "Rings", calc_ring_count(hwIpInfo->avaiable_rings));
+            mvwprintw2c(nwin, line, info_x, "%-15s: ", "IB Align");
+            mvwprintw2c(nwin, line, getcurx(nwin), "%s : %3d", "Start", hwIpInfo->ib_start_aligment);
+            mvwprintw2c(nwin, line++, getcurx(nwin) + 5, "%s : %3d", "Size", hwIpInfo->ib_size_alignment);
         } else {
             for (int j = 0; j < ipInfo->count; j++) {
                 hwIpInfo = &ipInfo->hwIpInfos[j];
-                mvwprintw2c(nwin, line++, info_x, "%-10s: [%d] %d.%d", "Version", j, hwIpInfo->version_major, hwIpInfo->version_minor);
-                mvwprintw2c(nwin, line++, info_x, "%-10s: [%d] %d", "Rings", j, calc_ring_count(hwIpInfo->avaiable_rings));
-                mvwprintw2c(nwin, line++, info_x, "%-10s: start %5d, size %5d", "IB Align", j, hwIpInfo->ib_start_aligment, hwIpInfo->ib_size_alignment);
+                mvwprintw2c(nwin, line++, info_x, "%-15s: [%d] %d.%d", "Version", j, hwIpInfo->version_major, hwIpInfo->version_minor);
+                mvwprintw2c(nwin, line++, info_x, "%-15s: [%d] %d", "Rings", j, calc_ring_count(hwIpInfo->avaiable_rings));
+                mvwprintw2c(nwin, line, info_x, "%-15s: ", "IB Align");
+                mvwprintw2c(nwin, line, getcurx(nwin), "%s : %3d", "Start", hwIpInfo->ib_start_aligment);
+                mvwprintw2c(nwin, line++, getcurx(nwin) + 5, "%s : %3d", "Size", hwIpInfo->ib_size_alignment);
             }
         }
     }
