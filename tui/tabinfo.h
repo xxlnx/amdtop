@@ -13,7 +13,7 @@ enum TabID {
     TabID_DRIVER,
     TabID_STAT,
     TabID_FIRMWARE,
-    TabID_CHIP,
+    TabID_RING,
     TabID_VBIOS,
     TabID_ABOUT,
     TabID_COUNT,

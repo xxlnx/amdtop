@@ -25,7 +25,7 @@ struct ip_info ipinfos[] = {
 
 #define IP_INFO_COUNT ARRAY_SIZE(ipinfos)
 
-static int getChipInfo(void)
+static int getRingInfo(void)
 {
     int ret = 0;
     struct Device *device = getAcitveDevice();
@@ -60,16 +60,16 @@ static uint32_t calc_ring_count(uint32_t rings)
     return count;
 }
 
-static int tabChipInfoInit(struct TabInfo *info, struct Window *win)
+static int tabRingInfoInit(struct TabInfo *info, struct Window *win)
 {
     WINDOW *nwin = win->nwin;
     int ret = 0;
-    int x = 10, info_x = 20;
+    int x = 10, info_x = 23;
     int line = 1;
     struct ip_info *ipInfo = NULL;
     struct GpuHwIPInfo *hwIpInfo = NULL;
 
-    ret = getChipInfo();
+    ret = getRingInfo();
     if (ret)
         return ret;
 
@@ -79,17 +79,17 @@ static int tabChipInfoInit(struct TabInfo *info, struct Window *win)
         mvwprintwc(nwin, line++, getcurx(nwin) + 1, COLOR_DEAFULT, "inst(s)");
         if (ipInfo->count == 1) {
             hwIpInfo = &ipInfo->hwIpInfos[0];
-            mvwprintw2c(nwin, line++, info_x, "%-15s: %d.%d", "Version", hwIpInfo->version_major, hwIpInfo->version_minor);
-            mvwprintw2c(nwin, line++, info_x, "%-15s: %d", "Rings", calc_ring_count(hwIpInfo->avaiable_rings));
-            mvwprintw2c(nwin, line, info_x, "%-15s: ", "IB Align");
+            mvwprintw2c(nwin, line++, info_x, "%-12s: %d.%d", "Version", hwIpInfo->version_major, hwIpInfo->version_minor);
+            mvwprintw2c(nwin, line++, info_x, "%-12s: %d", "Rings", calc_ring_count(hwIpInfo->avaiable_rings));
+            mvwprintw2c(nwin, line, info_x, "%-12s: ", "IB Align");
             mvwprintw2c(nwin, line, getcurx(nwin), "%s : %3d", "Start", hwIpInfo->ib_start_aligment);
             mvwprintw2c(nwin, line++, getcurx(nwin) + 5, "%s : %3d", "Size", hwIpInfo->ib_size_alignment);
         } else {
             for (int j = 0; j < ipInfo->count; j++) {
                 hwIpInfo = &ipInfo->hwIpInfos[j];
-                mvwprintw2c(nwin, line++, info_x, "%-15s: [%d] %d.%d", "Version", j, hwIpInfo->version_major, hwIpInfo->version_minor);
-                mvwprintw2c(nwin, line++, info_x, "%-15s: [%d] %d", "Rings", j, calc_ring_count(hwIpInfo->avaiable_rings));
-                mvwprintw2c(nwin, line, info_x, "%-15s: ", "IB Align");
+                mvwprintw2c(nwin, line++, info_x, "%-12s: [%d] %d.%d", "Version", j, hwIpInfo->version_major, hwIpInfo->version_minor);
+                mvwprintw2c(nwin, line++, info_x, "%-12s: [%d] %d", "Rings", j, calc_ring_count(hwIpInfo->avaiable_rings));
+                mvwprintw2c(nwin, line, info_x, "%-12s: ", "IB Align");
                 mvwprintw2c(nwin, line, getcurx(nwin), "%s : %3d", "Start", hwIpInfo->ib_start_aligment);
                 mvwprintw2c(nwin, line++, getcurx(nwin) + 5, "%s : %3d", "Size", hwIpInfo->ib_size_alignment);
             }
@@ -100,23 +100,23 @@ static int tabChipInfoInit(struct TabInfo *info, struct Window *win)
     return ret;
 }
 
-static int tabChipInfoExit(struct TabInfo *info, struct Window *win)
+static int tabRingInfoExit(struct TabInfo *info, struct Window *win)
 {
     int ret = 0;
     return ret;
 }
 
-static int tabChipInfoUpdate(struct TabInfo *info, struct Window *win)
+static int tabRingInfoUpdate(struct TabInfo *info, struct Window *win)
 {
     int ret = 0;
     return ret;
 }
 
-struct TabInfo chipInfo = {
-    .id = TabID_CHIP,
-    .name = "chipInfo",
-    .labelName = "Chip",
-    .init = tabChipInfoInit,
-    .exit = tabChipInfoExit,
+struct TabInfo ringInfo = {
+    .id = TabID_RING,
+    .name = "ringInfo",
+    .labelName = "Ring",
+    .init = tabRingInfoInit,
+    .exit = tabRingInfoExit,
 };
 
