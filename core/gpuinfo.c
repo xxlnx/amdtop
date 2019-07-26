@@ -444,6 +444,9 @@ char* gpuGetFamilyType(int32_t familyType)
         case AMDGPU_FAMILY_VI:
             name = "VI (Iceland, Tonga)";
             break;
+        case AMDGPU_FAMILY_KV:
+            name  = "KV (Kaveri, Kabini, Mullins)";
+            break;
         case AMDGPU_FAMILY_CZ:
             name = "CZ (Carrizo, Stoney)";
             break;
@@ -452,6 +455,9 @@ char* gpuGetFamilyType(int32_t familyType)
             break;
         case AMDGPU_FAMILY_RV:
             name = "RV (Raven)";
+            break;
+        case AMDGPU_FAMILY_NV:
+            name = "Navi";
             break;
         default:
             name = "unknow";
