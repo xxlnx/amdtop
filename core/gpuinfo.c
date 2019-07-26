@@ -418,7 +418,10 @@ char *gpuGetVramType(int32_t type)
         case AMDGPU_VRAM_TYPE_DDR3:
             name = "DDR3";
             break;
-        case 8:
+        case AMDGPU_VRAM_TYPE_DDR4:
+            name = "DDR4";
+            break;
+        case AMDGPU_VRAM_TYPE_GDDR6:
             name = "GDDR6";
             break;
         default:
