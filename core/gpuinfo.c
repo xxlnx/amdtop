@@ -466,3 +466,41 @@ char* gpuGetFamilyType(int32_t familyType)
     return name;
 }
 
+int gpuQueryGpuCap(struct GpuDevice *device, struct GpuCapInfo *capInfo)
+{
+    int ret = 0;
+    struct drm_amdgpu_capability cap;
+
+    if (!capInfo)
+        return -EINVAL;
+
+    MemClear(&cap, sizeof(cap));
+
+    ret = queryAmdGpuInfo(device, AMDGPU_INFO_CAPABILITY, sizeof(cap), &cap);
+    if (ret)
+        return ret;
+
+    capInfo->device = device;
+    capInfo->flags = cap.flag;
+    capInfo->dgma_size = cap.direct_gma_size;
+    capInfo->dgma_support = false;
+
+    if (cap.flag == 0) {
+        snprintf(capInfo->cap_str, GPUCAP_STRING_SIZE, "none");
+    } else {
+        if (cap.flag & AMDGPU_CAPABILITY_SSG_FLAG)
+            strcat(capInfo->cap_str, "SSG ");
+
+        if (cap.flag & AMDGPU_CAPABILITY_PIN_MEM_FLAG)
+            strcat(capInfo->cap_str, "Pin-MEM ");
+
+        if (cap.flag & AMDGPU_CAPABILITY_DIRECT_GMA_FLAG) {
+            capInfo->dgma_support = true;
+            snprintf(capInfo->cap_str, GPUCAP_STRING_SIZE, "%s %s (%d MB)",
+                capInfo->cap_str, "DGMA", capInfo->dgma_size);
+        }
+    }
+
+    return ret;
+}
+

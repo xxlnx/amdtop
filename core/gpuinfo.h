@@ -1,6 +1,7 @@
 #ifndef __GPU_INFO_H__
 #define __GPU_INFO_H__
 
+#include <stdbool.h>
 #include "gpudevice.h"
 #include "import/drm.h"
 #include "import/amdgpu_drm.h"
@@ -126,6 +127,15 @@ struct GpuHwIPInfo {
     uint32_t avaiable_rings;
 };
 
+#define GPUCAP_STRING_SIZE  (100)
+struct GpuCapInfo {
+    struct GpuDevice *device;
+    bool dgma_support;
+    uint32_t dgma_size;
+    uint32_t flags;
+    char cap_str[GPUCAP_STRING_SIZE];
+};
+
 int gpuQueryPciInfo(struct GpuDevice *device,  struct GpuPciInfo *pciInfo);
 int gpuQueryDriverInfo(struct GpuDevice *device, struct GpuDriverInfo *driverInfo);
 int gpuQueryDeviceInfo(struct GpuDevice *device, struct GpuDeviceInfo *deviceInfo);
@@ -137,6 +147,7 @@ int gpuQueryVBiosInfo(struct GpuDevice *device, struct GpuVBiosInfo* vBiosInfo);
 int gpuQueryDeviceName(struct GpuDevice *device, char *name);
 int gpuQueryHwIpCount(struct GpuDevice *device, enum GpuHwIpType hwIpType, uint32_t *count);
 int gpuQueryHwIpInfo(struct GpuDevice *device, enum GpuHwIpType hwIpType, uint32_t inst, struct GpuHwIPInfo *hwIpInfo);
+int gpuQueryGpuCap(struct GpuDevice *device, struct GpuCapInfo *capInfo);
 char* gpuGetFamilyType(int32_t familyType);
 char *gpuGetVramType(int32_t type);
 
