@@ -30,6 +30,8 @@ struct AmdGpuFenceInfo {
     uint32_t ringid;
     uint32_t signaled;
     uint32_t emitted;
+    uint32_t trailing_fence;
+    uint32_t emitted_trial;
     uint32_t preempted;
     uint32_t reset;
     uint32_t both;

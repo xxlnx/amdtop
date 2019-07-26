@@ -22,11 +22,14 @@ int main(int argc, char *argv[])
     ret = amdGpuRingInfo(dev, amdGpuRing, &ring_count);
     if (ret)
         return ret;
+    INFO("title:\t\t\t  signaled,\temitted,\trail,\temitted_trail,\tpreempt,\trest,\tboth\n");
     for (int i = 0 ; i < ring_count; i++) {
         ret = amdGpuQueryFenceInfo(&amdGpuRing[i], &fenceInfo);
         if (ret)
             return ret;
-        INFO("ring = %-20s, 0x%08x 0x%08x 0x%08x 0x%08x 0x%08x\n", &amdGpuRing[i].shortname, fenceInfo.emitted, fenceInfo.signaled, fenceInfo.both, fenceInfo.reset, fenceInfo.preempted);
+        INFO("ring = %-20s, 0x%08x 0x%08x 0x%08x 0x%08x 0x%08x 0x%08x 0x%08x\n",
+            &amdGpuRing[i].shortname,
+            fenceInfo.emitted, fenceInfo.signaled, fenceInfo.trailing_fence, fenceInfo.emitted_trial, fenceInfo.both, fenceInfo.reset, fenceInfo.preempted);
     }
     ret = gpuFreeDevices(&devices);
     if (ret)

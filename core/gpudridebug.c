@@ -123,12 +123,23 @@ int amdGpuQueryFenceInfo(struct AmdGpuRing *ring, struct AmdGpuFenceInfo *fenceI
         count = sscanf(buff, "--- ring %d (%s) ---", &ringid, ringname);
         if (count == 2) {
             fenceInfo->ringid = ringid;
+            int emitted_index = 0;
             if (!strncmp(ringname, ring->shortname, strlen(ring->shortname))) {
-                for (int i = 0; i < (ring->type == RingType_GFX ? 5 : 2); i++) {
+                do {
                     fgets(buff, 1024, fp);
                     if (strstr(buff, "emitted")) {
-                        if (sscanf(buff, "%*s %*s 0x%08x", &fence_count) == 1)
-                            fenceInfo->emitted = fence_count;
+                        if (emitted_index == 0) {
+                            if (sscanf(buff, "%*s %*s 0x%08x", &fence_count) == 1) {
+                                fenceInfo->emitted = fence_count;
+                            }
+                        } else if (emitted_index == 1) {
+                            if (sscanf(buff, "%*s %*s 0x%08x", &fence_count) == 1)
+                                fenceInfo->emitted_trial = fence_count;
+                        }
+                        emitted_index ++;
+                    } else if (strstr(buff, "trailing")) {
+                        if (sscanf(buff, "%*s %*s %*s %*s 0x%08x", &fence_count) == 1)
+                            fenceInfo->trailing_fence = fence_count;
                     } else if (strstr(buff, "signaled")) {
                         if (sscanf(buff, "%*s %*s %*s 0x%08x", &fence_count) == 1)
                             fenceInfo->signaled = fence_count;
@@ -142,7 +153,7 @@ int amdGpuQueryFenceInfo(struct AmdGpuRing *ring, struct AmdGpuFenceInfo *fenceI
                         if (sscanf(buff, "%*s %*s 0x%08x", &fence_count) == 1)
                             fenceInfo->both = fence_count;
                     }
-                }
+                } while(!feof(fp) && strncmp(buff, "---", 3));
             }
         }
     }
