@@ -10,6 +10,7 @@ extern struct TabInfo stateInfo;
 extern struct TabInfo ringInfo;
 extern struct TabInfo firmwareInfo;
 extern struct TabInfo systemInfo;
+extern struct TabInfo displayInfo;
 
 static struct TabInfo * tabinfoList [] = {
     &systemInfo,
@@ -18,6 +19,7 @@ static struct TabInfo * tabinfoList [] = {
     &ringInfo,
     &firmwareInfo,
     &biosInfo,
+    &displayInfo,
     &stateInfo,
     &aboutInfo,
 };

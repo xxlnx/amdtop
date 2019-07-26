@@ -475,3 +475,28 @@ bool WindowCheckSize(struct Window *win, uint32_t height, uint32_t width)
     return true;
 }
 
+void winframe(WINDOW *win, int starty, int startx, int endy, int endx, char *label)
+{
+
+    wattron(win, COLOR_PAIR(COLOR_DEAFULT));
+
+    /* Horizontal lines */
+    mvwhline(win, starty, startx, 0, endx - startx);
+    mvwhline(win, endy, startx, 0, endx - startx);
+
+    /* Vertical lines */
+    mvwvline(win, starty, startx, 0, endy - starty);
+    mvwvline(win, starty, endx - 1, 0, endy - starty);
+
+    /* Corners */
+    mvwhline(win, starty, startx, ACS_ULCORNER, 1);
+    mvwhline(win, endy, startx, ACS_LLCORNER, 1);
+    mvwhline(win, starty, endx - 1, ACS_URCORNER, 1);
+    mvwhline(win, endy, endx - 1, ACS_LRCORNER, 1);
+
+    /* Title */
+    mvwprintwc(win, starty, startx + 2, COLOR_DEAFULT, "%s", label);
+
+    wattroff(win, COLOR_PAIR(COLOR_DEAFULT));
+}
+

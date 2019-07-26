@@ -127,5 +127,6 @@ int barSetMaxValue(struct WindowBar *bar, uint32_t max);
 int barSetValue(struct WindowBar *bar, uint32_t value);
 int barUpdateLabel(struct WindowBar *bar);
 bool WindowCheckSize(struct Window *win, uint32_t height, uint32_t width);
+void winframe(WINDOW *win, int starty, int startx, int endy, int endx, char *label);
 
 #endif

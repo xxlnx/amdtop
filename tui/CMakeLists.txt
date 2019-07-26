@@ -18,6 +18,7 @@ set(srcs
     ringinfo.c
     firmwareinfo.c
     systeminfo.c
+    displayinfo.c
     aboutinfo.c)
 
 
@@ -26,5 +27,6 @@ target_link_libraries(amdtop
     utils
     pciaccess
     gpu
+    m
     ${CURSES_LIBRARIES})
 

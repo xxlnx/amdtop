@@ -15,6 +15,7 @@ enum TabID {
     TabID_FIRMWARE,
     TabID_RING,
     TabID_VBIOS,
+    TabID_Display,
     TabID_ABOUT,
     TabID_COUNT,
 };
