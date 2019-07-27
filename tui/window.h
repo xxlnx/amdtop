@@ -31,6 +31,8 @@ struct Window {
     struct WindowLayout layout;
     struct WindowContext *ctx;
     WINDOW *nwin;
+    uint64_t last_update_time;
+    uint64_t period;
 };
 
 enum WindowType {

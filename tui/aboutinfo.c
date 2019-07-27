@@ -35,5 +35,6 @@ struct TabInfo aboutInfo = {
     .labelName = "About",
     .init = tabAboutInfoInit,
     .exit = tabAboutInfoExit,
+    .update = 0,
 };
 

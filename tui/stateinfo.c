@@ -206,5 +206,6 @@ struct TabInfo stateInfo = {
     .init = tabStateInfoInit,
     .exit = tabStateInfoExit,
     .update = tabStateInfoUpdate,
+    .period = MS_2_NS(500),
 };
 

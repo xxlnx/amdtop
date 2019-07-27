@@ -107,4 +107,5 @@ struct Window TabWindow = {
     .name = "Tab",
     .id = WIN_TYPE_TAB,
     .ops = &tabOps,
+    .period = MS_2_NS(1000),
 };

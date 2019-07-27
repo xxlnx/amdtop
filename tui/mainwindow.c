@@ -55,11 +55,15 @@ static int mainUpdate(struct Window *win, uint32_t flags)
 {
     int ret = 0;
     struct TabInfo *tabInfo = getTabInfoByIndex(getContext()->activeTabID);
+    uint64_t currnet_ns = getcurrent_ns();
 
     if (DeviceDriverisLoaded(getAcitveDevice())) {
-        ret = TabinfoUpdate(tabInfo, win);
-        if (ret)
-            return ret;
+        if (tabInfo->period > 0 && currnet_ns >= tabInfo->last_update_time + tabInfo->period) {
+            ret = TabinfoUpdate(tabInfo, win);
+            if (ret)
+                return ret;
+            tabInfo->last_update_time = getcurrent_ns();
+        }
     }
 
     return ret;
@@ -77,4 +81,5 @@ struct Window MainWindow = {
     .name = "Main",
     .id = WIN_TYPE_MAIN,
     .ops = &mainOps,
+    .period = MS_2_NS(100),
 };

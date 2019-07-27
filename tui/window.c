@@ -39,7 +39,7 @@ int InitNcurse(struct WindowContext *ctx)
     } else {
         ctx->hasColor = FALSE;
     }
-    timeout(200);
+    timeout(100);
 
     return 0;
 }
@@ -264,6 +264,7 @@ int WindowsInit(struct WindowContext *ctx)
         win = ctx->wins[i];
         if (!win)
             continue;
+        win->last_update_time = 0;
         ret = WindowInit(win);
         if (ret)
             return ret;
@@ -291,13 +292,17 @@ int WindowsUpdate(struct WindowContext *ctx, uint32_t flags)
 {
     int ret = 0;
     struct Window *win = NULL;
+    uint64_t current_time = getcurrent_ns();
     for (int i = 0; i < WIN_TYPE_COUNT; i++) {
         win = ctx->wins[i];
         if (!win)
             continue;
-        ret = WindowUpdate(win, flags);
-        if (ret)
-            return ret;
+        if (win->period > 0 && current_time >= win->last_update_time + win->period) {
+            ret = WindowUpdate(win, flags);
+            if (ret)
+                return ret;
+            win->last_update_time = getcurrent_ns();
+        }
     }
     return 0;
 }

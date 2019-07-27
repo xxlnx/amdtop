@@ -134,5 +134,6 @@ struct TabInfo driverInfo = {
     .init = tabDriverInfoInit,
     .exit = tabDriverInfoExit,
     .update = tabDriverInfoUpdate,
+    .period = 0,
 };
 

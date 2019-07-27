@@ -152,5 +152,6 @@ struct TabInfo systemInfo = {
     .init = tabSystemInfoInit,
     .exit = tabSystemInfoExit,
     .update = tabSystemInfoUpdate,
+    .period = 0,
 };
 

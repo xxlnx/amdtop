@@ -47,6 +47,8 @@ int TabinfoInit(struct TabInfo *tabinfo, struct Window *win)
     if (tabinfo->init)
         ret = tabinfo->init(tabinfo, win);
 
+    tabinfo->last_update_time = 0;
+
     return ret;
 }
 

@@ -121,5 +121,6 @@ struct TabInfo ringInfo = {
     .labelName = "Ring",
     .init = tabRingInfoInit,
     .exit = tabRingInfoExit,
+    .period = 0,
 };
 

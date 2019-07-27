@@ -223,5 +223,6 @@ struct TabInfo biosInfo = {
     .init = tabBiosInfoInit,
     .exit = tabBiosInfoExit,
     .update = tabBiosInfoUpdate,
+    .period = 0,
 };
 

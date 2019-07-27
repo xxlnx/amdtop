@@ -151,5 +151,6 @@ struct TabInfo firmwareInfo = {
     .labelName = "Firmware",
     .init = tabFirmwareInfoInit,
     .exit = tabFirmwareInfoExit,
+    .period = 0,
 };
 

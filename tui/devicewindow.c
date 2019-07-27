@@ -137,4 +137,5 @@ struct Window DeviceWindow = {
     .name = "Device",
     .id = WIN_TYPE_DEVICE,
     .ops = &deviceOps,
+    .period = MS_2_NS(500),
 };

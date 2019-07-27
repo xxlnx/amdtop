@@ -494,5 +494,6 @@ struct TabInfo displayInfo = {
     .init = tabDisplayInfoInit,
     .exit = tabDisplayInfoExit,
     .update = tabDisplayInfoUpdate,
+    .period = MS_2_NS(500),
 };
 

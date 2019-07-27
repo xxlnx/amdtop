@@ -114,4 +114,5 @@ struct Window StatusWindow = {
     .name = "Status",
     .id = WIN_TYPE_STATUS,
     .ops = &statusOps,
+    .period = MS_2_NS(500),
 };

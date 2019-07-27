@@ -98,5 +98,6 @@ struct TabInfo deviceInfo = {
     .labelName = "Device",
     .init = tabDeviceInfoInit,
     .exit = tabDeviceInfoExit,
+    .period = 0,
 };
 

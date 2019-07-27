@@ -27,6 +27,8 @@ struct TabInfo {
     int (*init)(struct TabInfo *tabinfo, struct Window *win);
     int (*exit)(struct TabInfo *tabinfo, struct Window *win);
     int (*update)(struct TabInfo *tabinfo, struct Window *win);
+    uint64_t last_update_time;
+    uint64_t period;
     void *data;
 };
 
