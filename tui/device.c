@@ -85,10 +85,12 @@ int InitDevice(struct Device *device)
     device->sub_device_id = pdev->subdevice_id;
     device->revision_id = pdev->revision;
 
-    device->irq = pdev->irq;
     device->pci_class = pdev->device_class;
-
     device->driverisLoaded = false;
+
+    ret = DeviceGetIrqNumber(device, &device->irq);
+    if (ret)
+        return ret;
 
     ret = DeviceGetDeviceName(device, device->deviceName);
     if (ret)
@@ -326,5 +328,36 @@ int DeviceGetPciInfo(struct Device *device, struct PciLinkInfo *linkInfo)
     }
 
    return ret;
+}
+
+int DeviceGetIrqNumber(struct Device *device, uint32_t *irq_number)
+{
+    int ret = 0;
+    char fname[100] = {0};
+    char sys_path[100] = {0};
+    size_t  size = 0;
+    FILE *fp = NULL;
+
+    if (!irq_number)
+        return -EINVAL;
+
+    ret = DeviceGetSysPath(device, sys_path, &size);
+    if (ret)
+        return ret;
+
+    size = snprintf(fname, 100, "%s/irq", sys_path);
+
+    if (access(fname, O_RDONLY))
+        return -EACCES;
+
+    fp = fopen(fname, "r");
+    if (!fp)
+        return -EINVAL;
+
+    fscanf(fp, "%u", irq_number);
+
+    fclose(fp);
+
+    return ret;
 }
 

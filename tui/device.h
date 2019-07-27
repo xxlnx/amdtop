@@ -57,5 +57,6 @@ int getDeviceNameFromAmdgpuIDS(struct Device* device, char *name);
 bool DeviceDriverisLoaded(struct Device *device);
 int UpdateDeviceInfo(struct Device *device);
 int DeviceGetPciInfo(struct Device *device, struct PciLinkInfo *linkInfo);
+int DeviceGetIrqNumber(struct Device *device, uint32_t *irq_number);
 
 #endif
