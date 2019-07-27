@@ -37,6 +37,13 @@ struct DeviceContext {
     uint32_t  deviceCount;
 };
 
+struct PciLinkInfo {
+    float current_link_speed;
+    float current_link_width;
+    float max_link_speed;
+    float max_link_width;
+};
+
 struct DeviceContext* AllocDeviceContext(void);
 void FreeDeviceContext(struct DeviceContext *dctx);
 int InitDeviceContext(struct DeviceContext *dctx);
@@ -49,4 +56,6 @@ int DeviceGetDriverName(struct Device *device, char *driverName, size_t *outsize
 int getDeviceNameFromAmdgpuIDS(struct Device* device, char *name);
 bool DeviceDriverisLoaded(struct Device *device);
 int UpdateDeviceInfo(struct Device *device);
+int DeviceGetPciInfo(struct Device *device, struct PciLinkInfo *linkInfo);
+
 #endif

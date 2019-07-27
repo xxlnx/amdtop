@@ -286,3 +286,45 @@ bool DeviceDriverisLoaded(struct Device *device)
     return false;
 }
 
+
+int DeviceGetPciInfo(struct Device *device, struct PciLinkInfo *linkInfo)
+{
+   int ret = 0;
+   char fname[100] = {0};
+   char sys_path[100] = {0};
+   FILE *fp = NULL;
+   size_t  size = 0;
+
+    struct {
+        char *name;
+        float *value;
+    } linkInfos[] = {
+            {"current_link_speed", &linkInfo->current_link_speed},
+            {"current_link_width", &linkInfo->current_link_width},
+            {"max_link_speed", &linkInfo->max_link_speed},
+            {"max_link_width", &linkInfo->max_link_width},
+
+            };
+
+    ret = DeviceGetSysPath(device, sys_path, &size);
+    if (ret)
+        return ret;
+
+    for (int i = 0; i < 4; i++) {
+        snprintf(fname, 100, "%s/%s", sys_path, linkInfos[i].name);
+
+        if (access(fname, O_RDONLY))
+            continue;
+
+        fp = fopen(fname, "r");
+        if (!fp)
+            continue;
+
+        fscanf(fp, "%f %*s", linkInfos[i].value);
+
+        fclose(fp);
+    }
+
+   return ret;
+}
+
