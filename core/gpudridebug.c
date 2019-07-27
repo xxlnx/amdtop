@@ -1,6 +1,8 @@
 #include <errno.h>
 #include <string.h>
 #include <dirent.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include "gpudridebug.h"
 #include "utils.h"
 
@@ -161,3 +163,54 @@ int amdGpuQueryFenceInfo(struct AmdGpuRing *ring, struct AmdGpuFenceInfo *fenceI
 
     return ret;
 }
+
+#define DRM_CLIENTS_NAME    "clients"
+int amdGpuQueryClientInfo(struct GpuDevice *device, struct AmdGpuClientInfo *clientInfo, uint32_t *count)
+{
+    char fname[100] = {0};
+    char buf[1024] = {0};
+    int ret = 0;
+    size_t size = 0;
+    FILE *fp = NULL;
+    uint32_t client_count = 0;
+    uint32_t max_count = *count;
+    struct AmdGpuClientInfo *info = NULL;
+
+    size = snprintf(fname, 100, "%s/%d/%s", DRI_DEBUG_PATH, device->minor, DRM_CLIENTS_NAME);
+
+    if (access(fname, O_RDONLY))
+        return -EPERM;
+
+    fp = fopen(fname, "r");
+
+    fgets(buf, 1024, fp);
+    if (!strstr(buf, "master"))
+        return -EINVAL;
+
+/*    command   pid dev master a   uid      magic
+    Xorg  1224   0   y    y     0          0
+    compiz  2144   0   n    y  1000          1
+    java  4558   0   n    y  1000          3
+    java  4558   0   n    y  1000          4
+    chrome 28025   0   n    y  1000          2*/
+
+    while (!feof(fp) && client_count < max_count) {
+        info = &clientInfo[client_count];
+
+        size = fscanf(fp, "%20s %5d %3d   %c    %c %5d %10u\n",
+            info->command, &info->pid, &info->dev, &info->master, &info->a, &info->uid, &info->magic);
+
+        if (size != 7)
+            goto failed;
+
+        client_count++;
+    }
+failed:
+    if (count)
+        *count = client_count;
+
+    fclose(fp);
+
+    return ret;
+}
+

@@ -9,6 +9,9 @@ int main(int argc, char *argv[])
     struct GpuDeviceInfo deviceInfo;
     struct AmdGpuRing amdGpuRing[20];
     struct AmdGpuFenceInfo fenceInfo;
+    struct AmdGpuClientInfo clientInfos[20];
+    struct AmdGpuClientInfo *client = NULL;
+    uint32_t client_count = ARRAY_SIZE(clientInfos);
     uint32_t ring_count = 0;
     uint32_t count = 0;
     int ret = 0;
@@ -31,6 +34,18 @@ int main(int argc, char *argv[])
             &amdGpuRing[i].shortname,
             fenceInfo.emitted, fenceInfo.signaled, fenceInfo.trailing_fence, fenceInfo.emitted_trial, fenceInfo.both, fenceInfo.reset, fenceInfo.preempted);
     }
+
+    ret = amdGpuQueryClientInfo(dev, clientInfos, &client_count);
+    if (ret)
+        return ret;
+
+    for (int i = 0; i < client_count; i++) {
+        client = &clientInfos[i];
+        INFO("[%2d]: %s %d %d %c %c %d %u\n",
+            i, client->command, client->pid, client->dev, client->master, client->a, client->uid, client->magic);
+    }
+
+
     ret = gpuFreeDevices(&devices);
     if (ret)
         return ret;

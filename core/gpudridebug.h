@@ -37,7 +37,20 @@ struct AmdGpuFenceInfo {
     uint32_t both;
 };
 
+#define CLIENT_NAME_SIZE    (100)
+struct AmdGpuClientInfo {
+    char command[CLIENT_NAME_SIZE];
+    uint32_t pid;
+    uint32_t dev;
+    char master;
+    char a;
+    uint32_t uid;
+    uint32_t magic;
+};
+
+
 int amdGpuRingInfo(struct GpuDevice *device, struct AmdGpuRing *gpuRing, uint32_t *count);
 int amdGpuQueryFenceInfo(struct AmdGpuRing *ring, struct AmdGpuFenceInfo *fenceInfo);
+int amdGpuQueryClientInfo(struct GpuDevice *device, struct AmdGpuClientInfo *clientInfo, uint32_t *count);
 
 #endif
