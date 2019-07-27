@@ -111,7 +111,7 @@ static int tabStateInfoInit(struct TabInfo *info, struct Window *win)
         return 0;
     }
 
-    x = 10;
+    x = win->layout.width / 20;
     bar_width = win->layout.width - 2 * x - 2;
     width = bar_width - 28;
     if (width < 5) {

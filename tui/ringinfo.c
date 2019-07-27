@@ -64,7 +64,7 @@ static int tabRingInfoInit(struct TabInfo *info, struct Window *win)
 {
     WINDOW *nwin = win->nwin;
     int ret = 0;
-    int x = 10, info_x = 23;
+    int x, info_x;
     int line = 1;
     struct ip_info *ipInfo = NULL;
     struct GpuHwIPInfo *hwIpInfo = NULL;
@@ -72,6 +72,9 @@ static int tabRingInfoInit(struct TabInfo *info, struct Window *win)
     ret = getRingInfo();
     if (ret)
         return ret;
+
+    x = win->layout.width / 20;
+    info_x = x + 13;
 
     for (int i = 0; i < IP_INFO_COUNT; i++) {
         ipInfo = &ipinfos[i];
