@@ -92,8 +92,26 @@ static int deviceUpdate(struct Window *win, uint32_t flags)
 {
     int ret = 0;
     struct Device *dev = getAcitveDevice();
-    if (!dev)
-        return ret;
+    struct Window *mainWin = wctx->wins[WIN_TYPE_MAIN];
+
+    for (int i = 0; i < dctx->deviceCount; i++) {
+
+        dev = getDeviceByIndex(dctx, i);
+        if (!dev)
+            return 0;
+
+        if (!dev->driverisLoaded) {
+            if (pci_device_has_kernel_driver(dev->pdev)) {
+                ret = UpdateDeviceInfo(dev);
+                if (ret)
+                    return ret;
+                ret = WindowInit(mainWin);
+                if (ret)
+                    return ret;
+            }
+        }
+    }
+
     return ret;
 }
 
