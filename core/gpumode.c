@@ -446,6 +446,8 @@ int gpuGetCrtc(struct GpuModeResource *modeResource, uint32_t id, struct GpuCrtc
     struct GpuDevice *device = modeResource->device;
     MemClear(&drm_crtc, sizeof(drm_crtc));
 
+    drm_crtc.crtc_id = id;
+
     ret = gpuIoctl(device->fd, DRM_IOCTL_MODE_GETCRTC, &drm_crtc);
     if (ret)
         return ret;
@@ -458,10 +460,54 @@ int gpuGetCrtc(struct GpuModeResource *modeResource, uint32_t id, struct GpuCrtc
     crtc->y = drm_crtc.y;
     copyModeInfo(&crtc->modeInfo, &drm_crtc.mode);
     crtc->width = drm_crtc.mode.hdisplay;
-    crtc->heigh = drm_crtc.mode.vdisplay;
+    crtc->height = drm_crtc.mode.vdisplay;
     crtc->gamma_size = crtc->gamma_size;
     crtc->mode_valid = drm_crtc.mode_valid;
 
     return 0;
 }
 
+#define CONNECTOR_2_NAME(type)  case DRM_MODE_CONNECTOR_##type: return #type
+const char *getConnectorNameByType(uint32_t type)
+{
+    switch (type) {
+           CONNECTOR_2_NAME(Unknown);
+           CONNECTOR_2_NAME(VGA);
+           CONNECTOR_2_NAME(DVII);
+           CONNECTOR_2_NAME(DVID);
+           CONNECTOR_2_NAME(DVIA);
+           CONNECTOR_2_NAME(Composite);
+           CONNECTOR_2_NAME(SVIDEO);
+           CONNECTOR_2_NAME(LVDS);
+           CONNECTOR_2_NAME(Component);
+           CONNECTOR_2_NAME(9PinDIN);
+           CONNECTOR_2_NAME(DisplayPort);
+           CONNECTOR_2_NAME(HDMIA);
+           CONNECTOR_2_NAME(HDMIB);
+           CONNECTOR_2_NAME(TV);
+           CONNECTOR_2_NAME(eDP);
+           CONNECTOR_2_NAME(VIRTUAL);
+           CONNECTOR_2_NAME(DSI);
+           CONNECTOR_2_NAME(DPI);
+        default:
+            return "unknow";
+    }
+}
+
+#define ENCODER_2_NAME(type)  case DRM_MODE_ENCODER_##type: return #type
+const char *getEncoderNameByType(uint32_t type)
+{
+    switch (type) {
+        ENCODER_2_NAME(NONE);
+        ENCODER_2_NAME(DAC);
+        ENCODER_2_NAME(TMDS);
+        ENCODER_2_NAME(LVDS);
+        ENCODER_2_NAME(TVDAC);
+        ENCODER_2_NAME(VIRTUAL);
+        ENCODER_2_NAME(DSI);
+        ENCODER_2_NAME(DPMST);
+        ENCODER_2_NAME(DPI);
+        default:
+            return "unknow";
+    }
+}

@@ -21,28 +21,6 @@ struct GpuModeInfo {
     char name[32];
 };
 
-enum ConnectorType {
-    GPU_MODE_CONNECTOR_Unknown = 0,
-    GPU_MODE_CONNECTOR_VGA,
-    GPU_MODE_CONNECTOR_DVII,
-    GPU_MODE_CONNECTOR_DVID,
-    GPU_MODE_CONNECTOR_DVIA,
-    GPU_MODE_CONNECTOR_Composite,
-    GPU_MODE_CONNECTOR_SVIDEO,
-    GPU_MODE_CONNECTOR_LVDS,
-    GPU_MODE_CONNECTOR_Component,
-    GPU_MODE_CONNECTOR_9PinDIN,
-    GPU_MODE_CONNECTOR_DisplayPort,
-    GPU_MODE_CONNECTOR_HDMIA,
-    GPU_MODE_CONNECTOR_HDMIB,
-    GPU_MODE_CONNECTOR_TV,
-    GPU_MODE_CONNECTOR_eDP,
-    GPU_MODE_CONNECTOR_VIRTUAL,
-    GPU_MODE_CONNECTOR_DSI,
-    GPU_MODE_CONNECTOR_DPI,
-    GPU_MODE_COUNT,
-};
-
 enum GpuConnection {
     GPU_MODE_CONNECTED = 1,
     GPU_MODE_DISCONNECTED = 2,
@@ -107,7 +85,8 @@ struct GpuCrtc {
     uint32_t x; /**< x Position on the framebuffer */
     uint32_t y; /**< y Position on the framebuffer */
     uint32_t width;
-    uint32_t heigh;
+    uint32_t height;
+    uint32_t vrefresh;
     uint32_t gamma_size;
     uint32_t mode_valid;
     struct GpuModeInfo modeInfo;
@@ -139,5 +118,7 @@ int gpuGetPropBlob(struct GpuModeResource *modeResource, uint32_t blob_id, struc
 int gpuFreePropBlob(struct GpuPropBlob *blob);
 int gpuGetEncoder(struct GpuModeResource *modeResource, uint32_t id, struct GpuEncoder *encoder);
 int gpuGetCrtc(struct GpuModeResource *modeResource, uint32_t id, struct GpuCrtc *crtc);
+const char *getConnectorNameByType(uint32_t type);
+const char *getEncoderNameByType(uint32_t type);
 
 #endif
