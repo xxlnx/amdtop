@@ -25,6 +25,9 @@
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
+
+#define MS_2_NS(x) (x * 1000 * 1000ULL)
+
 void* xAlloc(size_t size);
 void *xFree(void *ptr);
 void MemClear(void *buf, size_t size);
@@ -32,5 +35,6 @@ void MemClear(void *buf, size_t size);
 uint32_t getProcMemInfo(const char *name);
 uint32_t getTotalMem(void);
 uint32_t getFreeMem(void);
+uint64_t getcurrent_ns(void);
 
 #endif

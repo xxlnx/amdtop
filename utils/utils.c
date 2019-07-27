@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <time.h>
 
 
 void* xAlloc(size_t size)
@@ -50,4 +51,11 @@ uint32_t getTotalMem(void)
 uint32_t getFreeMem(void)
 {
     return getProcMemInfo("MemAvailable");
+}
+
+uint64_t getcurrent_ns(void)
+{
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (uint64_t )((uint64_t )ts.tv_sec * 1000 * 1000 * 1000 + (uint64_t )ts.tv_nsec);
 }
