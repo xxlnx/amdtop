@@ -42,7 +42,7 @@ static int default_parse_firmware(struct GpuFwInfo *fwInfo, char *ver_buf, char*
                            fwInfo->version);
             break;
         case FwType_ASD:
-            ver_size = sprintf(ver_buf, "%d.%d.%d 0x%08x",
+            ver_size = sprintf(ver_buf, "%d.%d.%d \t0x%08x",
                            (fwInfo->version >> 16) & 0xffff,
                            (fwInfo->version >> 8) & 0xff,
                            (fwInfo->version) & 0xff,
