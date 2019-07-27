@@ -47,7 +47,6 @@ static int tabHandleInput(struct Window *win, int ch)
     enum HANDLE_TYPE handleType = HANDLE_HANDLED;
     int32_t tabid = getContext()->activeTabID;
     struct Window *mainWin = wctx->wins[WIN_TYPE_MAIN];
-    struct TabInfo *preInfo = NULL, *curInfo = NULL;
     int ret = 0;
 
     switch (ch) {
@@ -68,8 +67,6 @@ static int tabHandleInput(struct Window *win, int ch)
 
     if (tabid != getContext()->activeTabID) {
         /* need clear and refresh main window */
-        preInfo = getTabInfoByIndex(getContext()->activeTabID);
-        curInfo = getTabInfoByIndex(tabid);
         ret = WindowExit(mainWin);
         if (ret)
             return ret;
