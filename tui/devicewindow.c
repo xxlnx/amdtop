@@ -92,7 +92,7 @@ static int deviceUpdate(struct Window *win, uint32_t flags)
 {
     int ret = 0;
     struct Device *dev = getAcitveDevice();
-    struct Window *mainWin = wctx->wins[WIN_TYPE_MAIN];
+    struct Window *mainWin = getWindowByID(wctx, WIN_TYPE_MAIN);
 
     for (int i = 0; i < dctx->deviceCount; i++) {
 

@@ -33,7 +33,7 @@ struct Window {
     WINDOW *nwin;
 };
 
-enum WIN_TYPE {
+enum WindowType {
     WIN_TYPE_DEVICE = 0,
     WIN_TYPE_TAB,
     WIN_TYPE_MAIN,
@@ -116,6 +116,8 @@ int WindowsInit(struct WindowContext *ctx);
 int WindowsExit(struct WindowContext *ctx);
 int WindowsUpdate(struct WindowContext *ctx, uint32_t flags);
 int WindowClear(struct Window *win);
+struct Window* getWindowByID(struct WindowContext *ctx, enum WindowType type);
+
 uint32_t WindowGetColor(struct WindowContext *ctx, enum ColorType colorType);
 void winclear(WINDOW* nwin);
 int mvwprintwc(WINDOW *win, int y, int x, enum ColorType colorType, const char *fmt, ...);

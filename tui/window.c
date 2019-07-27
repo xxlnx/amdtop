@@ -8,6 +8,11 @@
 #define WINDOW_STATUS_HEIGH   (3)
 #define DEFAULT_WINDOW_SIZE   (80) /* 95  full window size */
 
+struct Window* getWindowByID(struct WindowContext *ctx, enum WindowType type)
+{
+    return ctx->wins[type];
+}
+
 struct WindowContext *AllocWindowContext(void)
 {
     return xAlloc(sizeof(struct WindowContext));
@@ -42,10 +47,10 @@ int InitNcurse(struct WindowContext *ctx)
 int InitWinLayout(struct WindowContext *ctx)
 {
     struct Window *win = NULL;
-    struct WindowLayout *deviceLayout = &ctx->wins[WIN_TYPE_DEVICE]->layout;
-    struct WindowLayout *tabLayout    = &ctx->wins[WIN_TYPE_TAB   ]->layout;
-    struct WindowLayout *mainLayout   = &ctx->wins[WIN_TYPE_MAIN  ]->layout;
-    struct WindowLayout *statusLayout = &ctx->wins[WIN_TYPE_STATUS]->layout;
+    struct WindowLayout *deviceLayout = &getWindowByID(ctx, WIN_TYPE_DEVICE)->layout;
+    struct WindowLayout *tabLayout    = &getWindowByID(ctx, WIN_TYPE_TAB)->layout;
+    struct WindowLayout *mainLayout   = &getWindowByID(ctx, WIN_TYPE_MAIN)->layout;
+    struct WindowLayout *statusLayout = &getWindowByID(ctx, WIN_TYPE_STATUS)->layout;
 
     ctx->width = COLS * DEFAULT_WINDOW_SIZE / 100;
     ctx->height = LINES * DEFAULT_WINDOW_SIZE / 100;

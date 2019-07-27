@@ -46,7 +46,7 @@ static int tabHandleInput(struct Window *win, int ch)
 {
     enum HANDLE_TYPE handleType = HANDLE_HANDLED;
     int32_t tabid = getContext()->activeTabID;
-    struct Window *mainWin = wctx->wins[WIN_TYPE_MAIN];
+    struct Window *mainWin = getWindowByID(wctx, WIN_TYPE_MAIN);
     int ret = 0;
 
     switch (ch) {
