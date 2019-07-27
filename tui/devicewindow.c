@@ -56,7 +56,9 @@ static int deviceExit(struct Window *win)
 static int deviceHandleInput(struct Window *win, int ch)
 {
     enum HANDLE_TYPE handleType = HANDLE_HANDLED;
+    struct Window *main_win = getWindowByID(wctx, WIN_TYPE_MAIN);
     int32_t deviceId = getContext()->activeDeviceID;
+    int ret = 0;
 
     if (dctx->deviceCount <= 1)
         return HANDLE_NONE;
@@ -77,6 +79,14 @@ static int deviceHandleInput(struct Window *win, int ch)
     if (deviceId != getContext()->activeDeviceID){
         updateActiveDevice(win, deviceId);
         getContext()->activeDeviceID = deviceId;
+
+        ret = WindowExit(main_win);
+        if (ret)
+            return ret;
+
+        ret = WindowInit(main_win);
+        if (ret)
+            return  ret;
     }
 
     return handleType;
