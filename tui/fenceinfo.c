@@ -36,7 +36,7 @@ static int update_fence_info(struct Window *win)
     int x = win->layout.width / 20;
 
 /*    WindowClear(win);*/
-    mvwprintwc(nwin, line++, x, COLOR_DEAFULT, "%-15s: %-8s \t%-8s \t%-8s \t%-8s \t%-8s \t%-8s \t%-8s",
+    mvwprintwc(nwin, line++, x, COLOR_DEAFULT, "%-15s: %-8s  %-8s  t%-8s  %-8s  %-8s  %-8s  %-8s",
         "RingName",
         "signal",
         "emitted",
@@ -51,7 +51,7 @@ static int update_fence_info(struct Window *win)
         ret = amdGpuQueryFenceInfo(&gpuRings[i], &fenceInfo);
         if (ret)
             return ret;
-        mvwprintw2c(nwin, line++, x, "%-15s: %08x \t%08x \t%08x \t%08x \t%08x \t%08x \t%08x",
+        mvwprintw2c(nwin, line++, x, "%-15s: %08x  %08x  %08x  %08x  %08x  %08x  %08x",
             gpuRings[i].shortname,
             fenceInfo.signaled,
             fenceInfo.emitted,

@@ -54,6 +54,12 @@ int InitWinLayout(struct WindowContext *ctx)
 
     ctx->width = COLS * DEFAULT_WINDOW_SIZE / 100;
     ctx->height = LINES * DEFAULT_WINDOW_SIZE / 100;
+
+    if (ctx->width < 112)
+        ctx->width = COLS - 2;
+    if (ctx->height < 42)
+        ctx->height = LINES - 2;
+
     ctx->startx = (COLS - ctx->width) / 2;
     ctx->starty = (LINES - ctx->height) / 2;
 
