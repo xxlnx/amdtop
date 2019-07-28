@@ -16,8 +16,7 @@ static int mainInit(struct Window *win)
             break;
         default:
             if (!DeviceDriverisLoaded(device)) {
-                mvwprintwc(nwin, win->layout.height / 2, (win->layout.width - 30) / 2, COLOR_RED_COLOR,
-                    "%10s: Driver is not Loaded", tabInfo->labelName);
+                mvwprintwc_center(nwin, COLOR_RED_COLOR, "%10s: Driver is not Loaded!", tabInfo->labelName);
                 wrefresh(nwin);
                 return 0;
             }

@@ -346,6 +346,30 @@ int mvwprintwc(WINDOW *win, int y, int x, enum ColorType colorType, const char *
     return ret;
 }
 
+int mvwprintwc_center(WINDOW *win, enum ColorType colorType, const char *fmt, ...)
+{
+    int ret = 0;
+
+    char buff[1024];
+    size_t size = 0;
+    int maxy , maxx;
+    int start_x = 0;
+    int start_y = 0;
+
+    getmaxyx(win, maxy, maxx);
+
+    va_list args;
+    va_start(args, fmt);
+    size = vsnprintf(buff, 1024, fmt, args);
+    va_end(args);
+
+    start_x = (maxx - size) / 2;
+    start_y = maxy / 2;
+    mvwprintwc(win, start_y, start_x, colorType, "%s", buff);
+
+    return ret;
+}
+
 int mvwprintw2c(WINDOW *win, int y, int x, const char *fmt, const char *label, ...)
 {
     int ret = 0;

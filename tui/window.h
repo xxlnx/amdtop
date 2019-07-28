@@ -124,6 +124,7 @@ uint32_t WindowGetColor(struct WindowContext *ctx, enum ColorType colorType);
 void winclear(WINDOW* nwin);
 int mvwprintwc(WINDOW *win, int y, int x, enum ColorType colorType, const char *fmt, ...);
 int mvwprintw2c(WINDOW *win, int y, int x, const char *fmt, const char *label, ...);
+int mvwprintwc_center(WINDOW *win, enum ColorType colorType, const char *fmt, ...);
 
 int barCreate(WINDOW *nwin, struct WindowBar *bar,
               const char *name, const char *unit, uint32_t y, uint32_t x, uint32_t width);
