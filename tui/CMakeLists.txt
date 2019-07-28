@@ -1,6 +1,12 @@
 find_package(Curses REQUIRED)
 include_directories(${CURSES_INCLUDE_DIRS})
 
+set(APP_NAME "amdtop")
+
+set(PROJECT_VERSION_MAJOR 0)
+set(PROJECT_VERSION_MINOR 1)
+set(PROJECT_VERSION_PATCH 0)
+
 set(srcs
     main.c
     window.c
@@ -21,24 +27,28 @@ set(srcs
     displayinfo.c
     aboutinfo.c)
 
+add_definitions(-DPROJECT_VERISON_MAJOR=${PROJECT_VERSION_MAJOR}
+    -DPROJECT_VERSION_MINOR=${PROJECT_VERSION_MINOR}
+    -DPROJECT_VERSION_PATCH=${PROJECT_VERSION_PATCH})
 
-add_executable(amdtop ${srcs})
-target_link_libraries(amdtop
+add_executable(${APP_NAME} ${srcs})
+target_link_libraries( ${APP_NAME}
     utils
     pciaccess
     gpu
     m
     ${CURSES_LIBRARIES})
 
+
 set(CPACK_GENERATOR "DEB")
 
-set(CPACK_PACKAGE_VERSION_MAJOR "0")
-set(CPACK_PACKAGE_VERSION_MINOR "1")
-set(CPACK_PACKAGE_VERSION_PATCH "0")
+set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
+set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
 
-set(CPACK_PACKAGE_NAME "amdtop")
+set(CPACK_PACKAGE_NAME  ${APP_NAME})
 
-set(CPACK_DEBIAN_PACKAGE_NAME "amdtop")
+set(CPACK_DEBIAN_PACKAGE_NAME ${APP_NAME})
 
 set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
 
@@ -54,7 +64,6 @@ set(CPACK_PACKAGE_CONTACT "wangyang7902@gmail")
 
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Wang Yang")
 
-install(TARGETS amdtop DESTINATION local/bin)
+install(TARGETS ${APP_NAME} DESTINATION local/bin)
 
 include(CPack)
-
