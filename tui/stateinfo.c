@@ -191,8 +191,8 @@ static int tabStateInfoInit(struct TabInfo *info, struct Window *win)
     start2x = startx + bar_width + startx;
 
     winframe(nwin, 1, 1, 8, win->layout.width - 2, "HW Monitor");
-    ret = barCreate(nwin, getSensorBar(BarType_GFXClock), "SCLK",  "MHz", line++, startx, width);
-    ret = barCreate(nwin, getSensorBar(BarType_MemClock), "MCLK",  "MHz", line++, startx, width);
+    ret = barCreate(nwin, getSensorBar(BarType_GFXClock), "GFX",  "MHz", line++, startx, width);
+    ret = barCreate(nwin, getSensorBar(BarType_MemClock), "MEM",  "MHz", line++, startx, width);
     ret = barCreate(nwin, getSensorBar(BarType_GpuLoad),  "GPU",  "%",   line++, startx, width);
     ret = barCreate(nwin, getSensorBar(BarType_CpuLoad),  "CPU",  "%",   line++, startx, width);
 
