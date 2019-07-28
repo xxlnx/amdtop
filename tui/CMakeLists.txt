@@ -25,6 +25,7 @@ set(srcs
     firmwareinfo.c
     systeminfo.c
     displayinfo.c
+    fenceinfo.c
     aboutinfo.c)
 
 add_definitions(-DPROJECT_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}

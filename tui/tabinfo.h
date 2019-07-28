@@ -14,6 +14,7 @@ enum TabID {
     TabID_STAT,
     TabID_FIRMWARE,
     TabID_RING,
+    TabID_FENCE,
     TabID_VBIOS,
     TabID_Display,
     TabID_ABOUT,
