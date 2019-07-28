@@ -52,11 +52,12 @@ static int tabDeviceInfoInit(struct TabInfo *info, struct Window *win)
     x = win->layout.width / 20;
     mvwprintw2c(nwin, line++, x, "%-20s: %s", "Name", device->deviceName);
     mvwprintw2c(nwin, line++, x, "%-20s: %s", "Famliy", gpuGetFamilyType(amdgpuinfo->family));
-    mvwprintw2c(nwin, line++, x, "%-20s: %04x:%04x", "PCI ID", device->vendor_id, device->device_id);
-    mvwprintw2c(nwin, line++, x, "%-20s: %04x:%04x", "PCI SUBID", device->sub_vendor_id, device->sub_device_id);
-    mvwprintw2c(nwin, line++, x, "%-20s: 0x%02x", "RevisionID", device->revision_id);
-    mvwprintw2c(nwin, line++, x, "%-20s: 0x%02x", "ChipRevID", amdgpuinfo->chip_rev);
-    mvwprintw2c(nwin, line++, x, "%-20s: 0x%02x", "ExternalID", amdgpuinfo->external_rev);
+    mvwprintw2c(nwin, line++, x, "%-20s: %04x:%04x", "PCI", device->vendor_id, device->device_id);
+    mvwprintw2c(nwin, line++, x, "%-20s: %04x:%04x", "PCI Sub", device->sub_vendor_id, device->sub_device_id);
+    mvwprintw2c(nwin, line++, x, "%-20s: 0x%02x", "PCI Revsion", device->revision_id);
+    mvwprintw2c(nwin, line++, x, "%-20s: 0x%02x", "Chip Rev", amdgpuinfo->chip_rev);
+    mvwprintw2c(nwin, line++, x, "%-20s: 0x%02x", "Chip ExtID", amdgpuinfo->external_rev);
+    mvwprintw2c(nwin, line++, x, "%-20s: %d", "IRQ No.", device->irq);
     mvwprintw2c(nwin, line++, x, "%-20s: %s", "Capability", capInfo.cap_str);
     mvwprintw2c(nwin, line++, x, "%-20s: %d",  "CUs Active", amdgpuinfo->cu_active_number);
     mvwprintw2c(nwin, line++, x, "%-20s: %d",  "CUs Per Shader", amdgpuinfo->num_cu_per_sh);
