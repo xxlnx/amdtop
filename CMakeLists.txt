@@ -13,10 +13,6 @@ execute_process(COMMAND git describe --abbrev=12 --always
     OUTPUT_VARIABLE GIT_REV)
 add_definitions(-DBUILD_GIT_VERSION=\"${GIT_REV}\")
 
-if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-    add_definitions(-D__DEBUG__=1)
-endif()
-
 include_directories(./)
 
 add_subdirectory(core)
