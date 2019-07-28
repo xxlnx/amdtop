@@ -40,8 +40,56 @@ static int mainExit(struct Window *win)
     return ret;
 }
 
+extern int requeset_exit;
+static int exitProgram(struct Window *win)
+{
+    int ret = 0;
+    WINDOW *nwin = win->nwin;
+    const int lines = 5, cols = 35;
+
+    int starty = (win->layout.height - lines - 2) / 2;
+    int startx = (win->layout.width - cols - 2) / 2;
+
+    winframe(nwin, starty++, startx, starty + lines, startx + cols, "");
+    mvwprintwc(nwin, starty++, startx + 1, COLOR_DEAFULT, "       Are you sure exit ?       ");
+    mvwprintwc(nwin, starty++, startx + 1, COLOR_DEAFULT, "                                 ");
+    mvwprintwc(nwin, starty++, startx + 1, COLOR_DEAFULT, "       Type 'y' exit             ");
+    mvwprintwc(nwin, starty++, startx + 1, COLOR_DEAFULT, "       Other continue.           ");
+    wrefresh(nwin);
+
+    timeout(5000);
+    if (getch() == 'y') {
+        requeset_exit = 1;
+    } else {
+        timeout(100);
+        ret = WindowExit(win);
+        if (ret)
+            return ret;
+        ret = WindowClear(win);
+        if (ret)
+            return ret;
+        ret = WindowInit(win);
+        if (ret)
+            return ret;
+    }
+
+    return ret;
+}
+
 static int mainHandleInput(struct Window *win, int ch)
 {
+    int ret = 0;
+
+    switch (ch) {
+        case 'q':
+            ret = exitProgram(win);
+            if (ret)
+                return ret;
+            break;
+        default:
+            break;
+    }
+
     return HANDLE_NONE;
 }
 

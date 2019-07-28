@@ -7,6 +7,7 @@
 
 int requeset_exit = 0;
 
+
 static void signal_handler(int signal)
 {
     requeset_exit = 1;
@@ -33,13 +34,9 @@ int main(int argc, char *argv[])
     InitNcurse(wctx);
     InitWindowContext(wctx);
 
-    while (ch = getch()) {
-        if (requeset_exit)
-            goto out;
+    while (!requeset_exit) {
+        ch = getch();
         switch (ch) {
-            case 'q':
-                goto out;
-                break;
             case KEY_RESIZE:
                 erase();
                 ret = WindowsUpdateUi(wctx);
