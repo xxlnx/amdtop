@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "device.h"
 #include "utils/utils.h"
 
@@ -357,6 +358,81 @@ int DeviceGetIrqNumber(struct Device *device, uint32_t *irq_number)
     fscanf(fp, "%u", irq_number);
 
     fclose(fp);
+
+    return ret;
+}
+
+int getFileContent(const char* name, char *buf, size_t in_size)
+{
+    FILE *fp = NULL;
+
+    size_t size = 0;
+
+    if (access(name, O_RDONLY))
+        return -EACCES;
+
+    fp = fopen(name, "r");
+    if (!fp)
+        return -EINVAL;
+
+    size = fread(buf, 1, in_size, fp);
+
+    fclose(fp);
+
+    return size;
+}
+
+int getIRQInfo(uint32_t irq, struct IRQInfo *irqInfo)
+{
+    int ret = 0;
+    char fname[MAX_NAME_SIZE];
+    char buf[MAX_NAME_SIZE];
+
+    snprintf(fname, MAX_NAME_SIZE, "/sys/kernel/irq/%d/type", irq);
+    ret = getFileContent(fname, irqInfo->type, MAX_NAME_SIZE);
+    if (ret < 0)
+        return ret;
+    irqInfo->irq_chip[ret - 1] = '\0';
+
+    snprintf(fname, MAX_NAME_SIZE, "/sys/kernel/irq/%d/chip_name", irq);
+    ret = getFileContent(fname, irqInfo->irq_chip, MAX_NAME_SIZE);
+    if (ret < 0)
+        return ret;
+    irqInfo->irq_chip[ret - 1] = '\0';
+
+    snprintf(fname, MAX_NAME_SIZE, "/sys/kernel/irq/%d/hwirq", irq);
+    ret = getFileContent(fname, buf, MAX_NAME_SIZE);
+    if (ret < 0)
+        return ret;
+    irqInfo->irq_chip[ret - 1] = '\0';
+
+    irqInfo->hw_irq = atoi(buf);
+    irqInfo->irq = irq;
+
+    return 0;
+}
+
+int getIrqCount(uint32_t irq, uint64_t *irq_count)
+{
+    int ret = 0;
+    char fname[MAX_NAME_SIZE];
+    char buf[MAX_NAME_SIZE];
+    uint64_t count = 0;
+    char *p = NULL, *save_ptr = NULL;
+
+    snprintf(fname, MAX_NAME_SIZE, "/sys/kernel/irq/%d/per_cpu_count", irq);
+
+    ret = getFileContent(fname, buf, MAX_NAME_SIZE);
+    if (ret < 0)
+        return ret;
+
+    p = strtok_r(buf, ",", &save_ptr) ;
+    count = atoll(p);
+    while((p = strtok_r(NULL, ",", &save_ptr)) != NULL) {
+        count += atoll(p);
+    }
+
+    *irq_count = count;
 
     return ret;
 }

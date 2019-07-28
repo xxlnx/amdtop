@@ -44,6 +44,14 @@ struct PciLinkInfo {
     float max_link_width;
 };
 
+struct IRQInfo {
+    uint32_t irq;
+    uint32_t hw_irq;
+    char type[MAX_NAME_SIZE];
+    char irq_chip[MAX_NAME_SIZE];
+};
+
+
 struct DeviceContext* AllocDeviceContext(void);
 void FreeDeviceContext(struct DeviceContext *dctx);
 int InitDeviceContext(struct DeviceContext *dctx);
@@ -58,5 +66,7 @@ bool DeviceDriverisLoaded(struct Device *device);
 int UpdateDeviceInfo(struct Device *device);
 int DeviceGetPciInfo(struct Device *device, struct PciLinkInfo *linkInfo);
 int DeviceGetIrqNumber(struct Device *device, uint32_t *irq_number);
+int getIRQInfo(uint32_t irq, struct IRQInfo *irqInfo);
+int getIrqCount(uint32_t irq, uint64_t *irq_count);
 
 #endif
