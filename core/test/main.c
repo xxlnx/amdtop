@@ -80,12 +80,6 @@ int main(int argc, char *argv[])
         return ret;
     xFree(vbiosInfo.image);
 
-    char name[100];
-    ret = gpuQueryDeviceName(&devices[0], name);
-    INFO("ret = %d, name = %s\n", ret, name);
-    if (ret)
-        return ret;
-
     struct GpuHwIPInfo ipInfo;
     uint32_t ipcount = 0;
     for (int i = 0; i < GPU_HW_IP_NUM; i ++) {
