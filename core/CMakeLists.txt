@@ -4,7 +4,8 @@ set(libsrc
     drmhelper.c
     gpuinfo.c
     gpumode.c
-    atombios.c)
+    atombios.c
+    gpudridebug.c)
 add_library(gpu STATIC ${libsrc})
 target_link_libraries(gpu
     utils)
