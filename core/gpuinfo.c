@@ -207,7 +207,8 @@ static int sysfs_get_uevent(int32_t major, uint32_t minor, const char *key, char
 {
     char buf[100] = {0};
     char *line = NULL;
-    int ret = -EINVAL, len = 0, size = 0;
+    int ret = -EINVAL, len = 0;
+    size_t size = 0;
     int keylen = strlen(key);
     *value = NULL;
     len = snprintf(buf, sizeof(buf), "/sys/dev/char/%d:%d/device/uevent", major, minor);
@@ -367,7 +368,7 @@ int gpuQueryHwIpInfo(struct GpuDevice *device, enum GpuHwIpType hwIpType, uint32
     struct drm_amdgpu_info_hw_ip info_hw_ip = {0};
     int ret = 0;
 
-    request.return_pointer = &info_hw_ip;
+    request.return_pointer = (uint64_t)(&info_hw_ip);
     request.return_size = sizeof(info_hw_ip);
     request.query = AMDGPU_INFO_HW_IP_INFO;
     request.query_hw_ip.type = hwIpType;
