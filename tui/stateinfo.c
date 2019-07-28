@@ -48,24 +48,10 @@ static int update_sensor_value(void)
     if (ret)
         return ret;
 
-    ret = gpuQuerySensorInfo(device->gpuDevice, SensorType_GpuTemp, &sensorInfo);
-    if (ret)
-        return ret;
-    ret = barSetValue(getSensorBar(BarType_GpuTemp), sensorInfo.value / 1000);
-    if (ret)
-        return ret;
-
     ret = gpuQuerySensorInfo(device->gpuDevice, SensorType_GpuLoad, &sensorInfo);
     if (ret)
         return ret;
     ret = barSetValue(getSensorBar(BarType_GpuLoad), sensorInfo.value);
-    if (ret)
-        return ret;
-
-    ret = gpuQuerySensorInfo(device->gpuDevice, SensorType_GpuPower, &sensorInfo);
-    if (ret)
-        return ret;
-    ret = barSetValue(getSensorBar(BarType_GpuPower), sensorInfo.value);
     if (ret)
         return ret;
 
@@ -101,35 +87,25 @@ static int tabStateInfoInit(struct TabInfo *info, struct Window *win)
     WINDOW *nwin = win->nwin;
     struct Device *device = getAcitveDevice();
     int ret = 0;
-    int width, bar_width, x, line;
+    int width, bar_width, startx, start2x, line;
 
-    line = 1;
-    if (WindowCheckSize(win, BarType_COUNT, 28 + 10) == false) {
-        needRefresh = false;
-        mvwprintwc(nwin, 1, 1, COLOR_RED_COLOR, "Window Too Small!", win->layout.width, win->layout.height);
-        wrefresh(nwin);
-        return 0;
-    }
-
-    x = win->layout.width / 20;
-    bar_width = win->layout.width - 2 * x - 2;
+    line = 3;
+    startx = win->layout.width / 20;
+    bar_width = (win->layout.width - 3 * startx - 2) / 2;
     width = bar_width - 28;
-    if (width < 5) {
-        x = 2;
-        bar_width = win->layout.width - 4;
-        width = bar_width - 28;
-        width = MAX(0, width);
-    }
 
-    ret = barCreate(nwin, getSensorBar(BarType_GFXClock), "SCLK",  "MHz", line++, x, width);
-    ret = barCreate(nwin, getSensorBar(BarType_MemClock), "MCLK",  "MHz", line++, x, width);
-    ret = barCreate(nwin, getSensorBar(BarType_GpuTemp),  "Temp",  "C",   line++, x, width);
-    ret = barCreate(nwin, getSensorBar(BarType_GpuLoad),  "Load",  "%",   line++, x, width);
-    ret = barCreate(nwin, getSensorBar(BarType_GpuPower), "Power", "Watt",   line++, x, width);
-    ret = barCreate(nwin, getSensorBar(BarType_VRAM),     "VRAM", "MB",   line++, x, width);
-    ret = barCreate(nwin, getSensorBar(BarType_VISIBLE),  "VIS", "MB",   line++, x, width);
-    ret = barCreate(nwin, getSensorBar(BarType_GTT),      "GTT", "MB",   line++, x, width);
-    ret = barCreate(nwin, getSensorBar(BarType_SysMem),   "SMem", "MB",   line++, x, width);
+    start2x = startx + bar_width + startx;
+
+    winframe(nwin, 1, 1, 8, win->layout.width - 2, "HW Monitor");
+    ret = barCreate(nwin, getSensorBar(BarType_GFXClock), "SCLK",  "MHz", line++, startx, width);
+    ret = barCreate(nwin, getSensorBar(BarType_MemClock), "MCLK",  "MHz", line++, startx, width);
+    ret = barCreate(nwin, getSensorBar(BarType_GpuLoad),  "GPU",  "%",   line++, startx, width);
+
+    line = 3;
+    ret = barCreate(nwin, getSensorBar(BarType_VRAM),     "VRAM", "MB",   line++, start2x, width);
+    ret = barCreate(nwin, getSensorBar(BarType_VISIBLE),  "VIS", "MB",   line++, start2x, width);
+    ret = barCreate(nwin, getSensorBar(BarType_GTT),      "GTT", "MB",   line++, start2x, width);
+    ret = barCreate(nwin, getSensorBar(BarType_SysMem),   "RAM", "MB",   line++, start2x, width);
 
     ret = gpuQueryDeviceInfo(device->gpuDevice, &deviceInfo);
     if (ret)
@@ -149,13 +125,7 @@ static int tabStateInfoInit(struct TabInfo *info, struct Window *win)
     ret = barSetMaxValue(getSensorBar(BarType_MemClock), deviceInfo.amdgpu.max_memory_clock / 1000);
     if (ret)
         return  ret;
-    ret = barSetMaxValue(getSensorBar(BarType_GpuTemp), 100);
-    if (ret)
-        return  ret;
     ret = barSetMaxValue(getSensorBar(BarType_GpuLoad), 100);
-    if (ret)
-        return  ret;
-    ret = barSetMaxValue(getSensorBar(BarType_GpuPower), 150);
     if (ret)
         return  ret;
     ret = barSetMaxValue(getSensorBar(BarType_VRAM), ALIGN(vramInfo.total >> 20, 1024));
