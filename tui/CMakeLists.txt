@@ -27,9 +27,12 @@ set(srcs
     displayinfo.c
     aboutinfo.c)
 
-add_definitions(-DPROJECT_VERISON_MAJOR=${PROJECT_VERSION_MAJOR}
+add_definitions(-DPROJECT_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}
     -DPROJECT_VERSION_MINOR=${PROJECT_VERSION_MINOR}
     -DPROJECT_VERSION_PATCH=${PROJECT_VERSION_PATCH})
+
+add_definitions(-DSYSTEM_PROCESSOR="${CMAKE_SYSTEM_PROCESSOR}"
+    -DC_COMPILER_ID="${CMAKE_C_COMPILER_ID}")
 
 add_executable(${APP_NAME} ${srcs})
 target_link_libraries( ${APP_NAME}
