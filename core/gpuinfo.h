@@ -25,6 +25,7 @@ enum GpuFwType {
     FwType_ASD,
     FwType_SDMA,
     FwType_SMC,
+    FwType_VCN,
     FwType_COUNT,
 };
 

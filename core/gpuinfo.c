@@ -114,6 +114,7 @@ static int amdGpuFwTypeMap(enum GpuFwType type) {
         [FwType_ASD]  = AMDGPU_INFO_FW_ASD,
         [FwType_SDMA] = AMDGPU_INFO_FW_SDMA,
         [FwType_SMC]  = AMDGPU_INFO_FW_SMC,
+        [FwType_VCN]  = AMDGPU_INFO_FW_VCN,
     };
     if (type > FwType_COUNT)
         return -EINVAL;
