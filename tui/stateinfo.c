@@ -1,6 +1,10 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <time.h>
 #include "tabinfo.h"
 #include "core/gpuinfo.h"
 
@@ -10,6 +14,7 @@ enum BarType {
     BarType_GFXClock,
     BarType_MemClock,
     BarType_GpuLoad,
+    BarType_CpuLoad,
     BarType_GpuTemp,
     BarType_GpuPower,
     BarType_VRAM,
@@ -23,10 +28,95 @@ static struct WindowBar sensorBar[BarType_COUNT];
 static struct GpuMemInfo vramInfo, visibleInfo, gttInfo;
 static struct GpuSensorInfo sensorInfo;
 static struct GpuDeviceInfo deviceInfo;
+
 static bool needRefresh = true;
 static struct WindowBar *getSensorBar(enum BarType type)
 {
     return &sensorBar[type];
+}
+struct CpuStat {
+    uint64_t user;
+    uint64_t nice;
+    uint64_t system;
+    uint64_t idle;
+    uint64_t iowait;
+    uint64_t irq;
+    uint64_t soft_irq;
+    uint64_t steal;
+    uint64_t total;
+};
+
+struct CpuLoad {
+    struct CpuStat last_stat, stat;
+};
+
+#define STAT_PATH "/proc/stat"
+
+int getCpuStat(struct CpuStat *stat)
+{
+    size_t  size = 0;
+
+    FILE *fp = fopen(STAT_PATH, "r");
+    if (!fp)
+        return 0;
+
+    size = fscanf(fp, "cpu %ld %ld %ld %ld %ld %ld %ld %*s %*s %*s",
+       &stat->user,
+       &stat->nice,
+       &stat->system,
+       &stat->idle,
+       &stat->iowait,
+       &stat->irq,
+       &stat->soft_irq);
+
+    stat->total = stat->user + stat->nice + stat->system + stat->idle + stat->iowait + stat->irq + stat->soft_irq;
+
+    fclose(fp);
+
+    return 0;
+}
+
+static uint32_t getCpuLoad(void)
+{
+    int ret = 0;
+    static struct CpuLoad load;
+    struct CpuStat *cur = NULL, *last = NULL;
+    static uint32_t last_percent = 0;
+    static bool first = true;
+    struct timespec ts;
+    uint64_t avg_load = 0;
+    uint32_t percent = 0;
+
+    cur = &load.stat;
+    last = &load.last_stat;
+
+    if (first) {
+        first = false;
+        MemClear(&load, sizeof(load));
+        ret = getCpuStat(last);
+        if (ret)
+            return ret;
+        ts.tv_sec = 0;
+        ts.tv_nsec = MS_2_NS(50);
+        nanosleep(&ts, NULL);
+    }
+
+    ret = getCpuStat(cur);
+    if (ret)
+        return ret;
+
+    if (cur->total == last->total)
+        return last_percent;
+
+    avg_load = ((cur->idle + cur->iowait) - (last->idle + last->iowait)) * 1000 / (cur->total - last->total);
+    avg_load = 1000 - avg_load;
+    percent = avg_load % 1000;
+
+    memcpy(last, cur, sizeof(*cur));
+
+    last_percent = percent;
+
+    return percent;
 }
 
 static int update_sensor_value(void)
@@ -78,6 +168,10 @@ static int update_sensor_value(void)
     if (ret)
         return ret;
 
+    ret = barSetValue(getSensorBar(BarType_CpuLoad), MIN(getCpuLoad() / 10, 100));
+    if (ret)
+        return ret;
+
     return ret;
 }
 
@@ -100,6 +194,7 @@ static int tabStateInfoInit(struct TabInfo *info, struct Window *win)
     ret = barCreate(nwin, getSensorBar(BarType_GFXClock), "SCLK",  "MHz", line++, startx, width);
     ret = barCreate(nwin, getSensorBar(BarType_MemClock), "MCLK",  "MHz", line++, startx, width);
     ret = barCreate(nwin, getSensorBar(BarType_GpuLoad),  "GPU",  "%",   line++, startx, width);
+    ret = barCreate(nwin, getSensorBar(BarType_CpuLoad),  "CPU",  "%",   line++, startx, width);
 
     line = 3;
     ret = barCreate(nwin, getSensorBar(BarType_VRAM),     "VRAM", "MB",   line++, start2x, width);
@@ -128,6 +223,9 @@ static int tabStateInfoInit(struct TabInfo *info, struct Window *win)
     ret = barSetMaxValue(getSensorBar(BarType_GpuLoad), 100);
     if (ret)
         return  ret;
+    ret = barSetMaxValue(getSensorBar(BarType_CpuLoad), 100);
+    if (ret)
+        return  ret;
     ret = barSetMaxValue(getSensorBar(BarType_VRAM), ALIGN(vramInfo.total >> 20, 1024));
     if (ret)
         return  ret;
@@ -142,8 +240,6 @@ static int tabStateInfoInit(struct TabInfo *info, struct Window *win)
         return  ret;
 
     ret = update_sensor_value();
-    if (ret)
-        return ret;
 
     wrefresh(nwin);
 
@@ -161,9 +257,7 @@ static int tabStateInfoUpdate(struct TabInfo *info, struct Window *win)
     int ret = 0;
 
     if (needRefresh)
-        ret = update_sensor_value();
-    if (ret)
-        return ret;
+         ret = update_sensor_value();
 
     wrefresh(win->nwin);
     return ret;
