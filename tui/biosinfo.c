@@ -5,14 +5,16 @@
 
 static struct atombios gAtombios;
 static struct GpuVBiosInfo gpuVBiosInfo;
+static struct device *cur_device = NULL;
 
 static int getAllInfo(void)
 {
-    static int first = true;
     struct Device *device = getAcitveDevice();
     int ret = 0;
-    if (!first)
+
+    if (device == cur_device)
         return 0;
+    cur_device = device;
 
     ret = gpuQueryVBiosInfo(device->gpuDevice, &gpuVBiosInfo);
     if (ret)
@@ -22,7 +24,6 @@ static int getAllInfo(void)
     if (ret)
         return ret;
 
-    first = false;
     return ret;
 }
 
