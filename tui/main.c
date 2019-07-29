@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
     signal(SIGSEGV, signal_handler);
     signal(SIGABRT, signal_handler);
     signal(SIGPIPE, signal_handler);
+    signal(SIGINT , signal_handler);
 
     dctx = AllocDeviceContext();
     InitDeviceContext(dctx);
