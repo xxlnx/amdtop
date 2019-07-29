@@ -5,6 +5,9 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <time.h>
+#include <pwd.h>
+#include <sys/types.h>
+#include "core/gpudridebug.h"
 #include "tabinfo.h"
 #include "core/gpuinfo.h"
 
@@ -26,6 +29,10 @@ static struct WindowBar sensorBar[BarType_COUNT];
 static struct GpuMemInfo vramInfo, visibleInfo, gttInfo;
 static struct GpuSensorInfo sensorInfo;
 static struct GpuDeviceInfo deviceInfo;
+#define MAX_CLIENT_COUNT  (40)
+static uint32_t ui_clients_starty = 0, ui_clients_count = 0;
+static struct AmdGpuClientInfo clientInfos[MAX_CLIENT_COUNT] = {0};
+static bool hasRootPermission = false;
 
 static struct WindowBar *getSensorBar(enum BarType type)
 {
@@ -207,13 +214,53 @@ static int update_sensor_value(WINDOW *nwin)
     return ret;
 }
 
+static int update_client_info(WINDOW *nwin)
+{
+    int ret = 0;
+    struct Device *device = getAcitveDevice();
+    uint32_t count = 0;
+    struct AmdGpuClientInfo *info = NULL;
+    uint32_t startx = getmaxx(nwin) / 20;
+    struct passwd *pw = NULL;
 
+    if (!hasRootPermission)
+        return 0;
+
+    count = MAX_NAME_SIZE;
+    ret = amdGpuQueryClientInfo(device->gpuDevice, clientInfos, &count);
+    if (ret)
+        return ret;
+
+    mvwprintwc(nwin, ui_clients_starty + 5 , startx, COLOR_DEAFULT, "ret = %d count = %d, %d %d",
+        ret, count, ui_clients_starty, ui_clients_count);
+
+    for (int i = 0; i < ui_clients_count; i++) {
+        info = &clientInfos[i];
+        pw = getpwuid(info->uid);
+        if (i < count) {
+            mvwprintwc(nwin, ui_clients_starty + i, startx, COLOR_DEAFULT, "%-5d %-15s\t %-10d\t %-10s\t %-10s\t %-10s\t",
+                       i,
+                       info->command,
+                       info->pid,
+                       pw->pw_name,
+                       info->master == 'y' ? "master" : "normal",
+                       info->a == 'a' ? "y" : "n");
+        } else {
+            for (int j = 2; j < getmaxx(nwin) - 3; j++)
+                mvwprintwc(nwin, ui_clients_starty + i, j, COLOR_DEAFULT, " ");
+        }
+    }
+
+    return  ret;
+}
 static int tabStateInfoInit(struct TabInfo *info, struct Window *win)
 {
     WINDOW *nwin = win->nwin;
     struct Device *device = getAcitveDevice();
     int ret = 0;
     int width, bar_width, startx, start2x, line;
+
+    hasRootPermission = geteuid() == 0 ? true : false;
 
     line = 3;
     startx = win->layout.width / 20;
@@ -261,6 +308,24 @@ static int tabStateInfoInit(struct TabInfo *info, struct Window *win)
     power_label.fmt = "% -3d";
     power_label.unit = " Watt";
 
+    line += 2;
+    winframe(nwin, line++, 1, win->layout.height - 2, win->layout.width - 2, "Gpu Clients");
+    for (int i = 2; i < win->layout.width - 3; i++)
+        mvwprintwc(nwin, line, i, COLOR_TAB_ACITVE, " ");
+    ui_clients_starty = line + 1;
+    ui_clients_count = win->layout.height - 2 - ui_clients_starty;
+    mvwprintwc(nwin, line, getmaxx(nwin) / 20, COLOR_TAB_ACITVE, "%-5s %-15s\t %-10s\t %-10s\t %-10s\t %-10s\t",
+               "ID", "Command", "Pid", "User", "Master", "Auth");
+
+    if (!hasRootPermission) {
+        const char* text = "Need Root Permission!";
+        mvwprintwc(nwin, ui_clients_starty + ui_clients_count / 2,
+                   ((win->layout.width - strlen(text)) / 2 ),
+                   COLOR_RED_COLOR,
+                   "%s",
+                   text);
+    }
+
     ret = gpuQueryDeviceInfo(device->gpuDevice, &deviceInfo);
     if (ret)
         return  ret;
@@ -299,6 +364,12 @@ static int tabStateInfoInit(struct TabInfo *info, struct Window *win)
         return  ret;
 
     ret = update_sensor_value(nwin);
+    if (ret)
+        return ret;
+
+    ret = update_client_info(nwin);
+    if (ret)
+        return ret;
 
     wrefresh(nwin);
 
@@ -317,6 +388,10 @@ static int tabStateInfoUpdate(struct TabInfo *info, struct Window *win)
     WINDOW *nwin = win->nwin;
 
     ret = update_sensor_value(nwin);
+    if (ret)
+        return ret;
+
+    ret = update_client_info(nwin);
     if (ret)
         return ret;
 
