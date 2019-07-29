@@ -15,8 +15,6 @@ enum BarType {
     BarType_MemClock,
     BarType_GpuLoad,
     BarType_CpuLoad,
-    BarType_GpuTemp,
-    BarType_GpuPower,
     BarType_VRAM,
     BarType_GTT,
     BarType_VISIBLE,
@@ -29,11 +27,20 @@ static struct GpuMemInfo vramInfo, visibleInfo, gttInfo;
 static struct GpuSensorInfo sensorInfo;
 static struct GpuDeviceInfo deviceInfo;
 
-static bool needRefresh = true;
 static struct WindowBar *getSensorBar(enum BarType type)
 {
     return &sensorBar[type];
 }
+
+struct label_position {
+    uint32_t y;
+    uint32_t x;
+    const char *fmt;
+    const char *unit;
+};
+
+static struct label_position temp_label, power_label, pmclk_label, psclk_label;
+
 struct CpuStat {
     uint64_t user;
     uint64_t nice;
@@ -119,7 +126,7 @@ static uint32_t getCpuLoad(void)
     return percent;
 }
 
-static int update_sensor_value(void)
+static int update_sensor_value(WINDOW *nwin)
 {
     int ret = 0;
     struct Device *device = getAcitveDevice();
@@ -172,6 +179,31 @@ static int update_sensor_value(void)
     if (ret)
         return ret;
 
+    ret = gpuQuerySensorInfo(device->gpuDevice, SensorType_GpuTemp, &sensorInfo);
+    if (ret)
+        return ret;
+    mvwprintwc(nwin, temp_label.y, temp_label.x, COLOR_DEAFULT, temp_label.fmt, sensorInfo.value / 1000);
+    mvwprintwc(nwin, temp_label.y, getcurx(nwin), COLOR_DEAFULT, "%s", temp_label.unit);
+
+    ret = gpuQuerySensorInfo(device->gpuDevice, SensorType_GpuPower, &sensorInfo);
+    if (ret)
+        return ret;
+    mvwprintwc(nwin, power_label.y, power_label.x, COLOR_DEAFULT, power_label.fmt, sensorInfo.value);
+    mvwprintwc(nwin, power_label.y, getcurx(nwin), COLOR_DEAFULT, "%s", power_label.unit);
+
+    ret = gpuQuerySensorInfo(device->gpuDevice, SensorType_PSTATE_GFXClock, &sensorInfo);
+    if (ret)
+        return ret;
+    mvwprintwc(nwin, psclk_label.y, psclk_label.x, COLOR_DEAFULT, psclk_label.fmt, sensorInfo.value);
+    mvwprintwc(nwin, psclk_label.y, getcurx(nwin), COLOR_DEAFULT, "%s", psclk_label.unit);
+
+    ret = gpuQuerySensorInfo(device->gpuDevice, SensorType_PSTATE_GFXClock, &sensorInfo);
+    if (ret)
+        return ret;
+    mvwprintwc(nwin, pmclk_label.y, pmclk_label.x, COLOR_DEAFULT, pmclk_label.fmt, sensorInfo.value);
+    mvwprintwc(nwin, pmclk_label.y, getcurx(nwin), COLOR_DEAFULT, "%s", pmclk_label.unit);
+
+
     return ret;
 }
 
@@ -190,7 +222,7 @@ static int tabStateInfoInit(struct TabInfo *info, struct Window *win)
 
     start2x = startx + bar_width + startx;
 
-    winframe(nwin, 1, 1, 8, win->layout.width - 2, "HW Monitor");
+    winframe(nwin, 1, 1, 10, win->layout.width - 2, "HW Monitor");
     ret = barCreate(nwin, getSensorBar(BarType_GFXClock), "GFX",  "MHz", line++, startx, width);
     ret = barCreate(nwin, getSensorBar(BarType_MemClock), "MEM",  "MHz", line++, startx, width);
     ret = barCreate(nwin, getSensorBar(BarType_GpuLoad),  "GPU",  "%",   line++, startx, width);
@@ -201,6 +233,33 @@ static int tabStateInfoInit(struct TabInfo *info, struct Window *win)
     ret = barCreate(nwin, getSensorBar(BarType_VISIBLE),  "VIS", "MB",   line++, start2x, width);
     ret = barCreate(nwin, getSensorBar(BarType_GTT),      "GTT", "MB",   line++, start2x, width);
     ret = barCreate(nwin, getSensorBar(BarType_SysMem),   "RAM", "MB",   line++, start2x, width);
+
+
+    int label_starty = line;
+    mvwprintwc(nwin, line++, startx, COLOR_DEAFULT, "%-5s :", "PGFX");
+    psclk_label.y = getcury(nwin);
+    psclk_label.x = getcurx(nwin);
+    psclk_label.fmt = "% -3d";
+    psclk_label.unit= " Mhz";
+
+    mvwprintwc(nwin, line++, startx, COLOR_DEAFULT, "%-5s :", "PMEM");
+    pmclk_label.y = getcury(nwin);
+    pmclk_label.x = getcurx(nwin);
+    pmclk_label.fmt = "% -3d";
+    pmclk_label.unit= " Mhz";
+
+    line = label_starty;
+    mvwprintwc(nwin, line++, start2x, COLOR_DEAFULT, "%-5s :", "Temp");
+    temp_label.y = getcury(nwin);
+    temp_label.x = getcurx(nwin);
+    temp_label.fmt = "% -3d";
+    temp_label.unit = " C";
+
+    mvwprintwc(nwin, line++, start2x, COLOR_DEAFULT, "%-5s :", "Power");
+    power_label.y = getcury(nwin);
+    power_label.x = getcurx(nwin);
+    power_label.fmt = "% -3d";
+    power_label.unit = " Watt";
 
     ret = gpuQueryDeviceInfo(device->gpuDevice, &deviceInfo);
     if (ret)
@@ -239,7 +298,7 @@ static int tabStateInfoInit(struct TabInfo *info, struct Window *win)
     if (ret)
         return  ret;
 
-    ret = update_sensor_value();
+    ret = update_sensor_value(nwin);
 
     wrefresh(nwin);
 
@@ -255,11 +314,13 @@ static int tabStateInfoExit(struct TabInfo *info, struct Window *win)
 static int tabStateInfoUpdate(struct TabInfo *info, struct Window *win)
 {
     int ret = 0;
+    WINDOW *nwin = win->nwin;
 
-    if (needRefresh)
-         ret = update_sensor_value();
+    ret = update_sensor_value(nwin);
+    if (ret)
+        return ret;
 
-    wrefresh(win->nwin);
+    wrefresh(nwin);
     return ret;
 }
 
