@@ -11,9 +11,9 @@ static void updateActiveTab(struct Window *win, int index)
     const uint32_t x = 1, y = 1;
     for (int i = 0 ; i < gTabCount; i ++){
         if (i == index)
-            mvwprintw(win->nwin, y + i, x, "*");
+            mvwprintwc(win->nwin, y + i, x, COLOR_DEAFULT, "*");
         else
-            mvwprintw(win->nwin, y + i, x, " ");
+            mvwprintwc(win->nwin, y + i, x, COLOR_DEAFULT, " ");
     }
     wrefresh(win->nwin);
 }
@@ -31,6 +31,9 @@ static int tabInit(struct Window *win)
         mvwprintw(win->nwin, line, 3, "%2d. %s", i + 1, tabInfo->labelName);
         line++;
     }
+
+    mvwprintwc(win->nwin, win->layout.height - 2, 1, COLOR_BLUE_COLOR, "[h or ? for help!]");
+
     wrefresh(win->nwin);
     updateActiveTab(win, getContext()->activeTabID);
     return ret;

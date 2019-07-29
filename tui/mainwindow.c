@@ -1,3 +1,4 @@
+#include <string.h>
 #include "window.h"
 #include "tabinfo.h"
 
@@ -56,7 +57,7 @@ static int exitProgram(struct Window *win)
     mvwprintwc(nwin, starty++, startx + 1, COLOR_DEAFULT, "       Other continue.           ");
     wrefresh(nwin);
 
-    timeout(5000);
+    timeout(-1);
     if (getch() == 'y') {
         requeset_exit = 1;
     } else {
@@ -75,6 +76,74 @@ static int exitProgram(struct Window *win)
     return ret;
 }
 
+const char *helper_str[] = {
+    "Help:",
+    "F3:",
+    "   switch previous device",
+    "F4:",
+    "   switch next device",
+    "Ctrl-P / PageUP:",
+    "   switch previous tabpage",
+    "Ctrl-N / PageDown:",
+    "   switch next tabpage",
+    "? / h :",
+    "   show this information",
+    "q: ",
+    "   exit program",
+    "",
+    "",
+    "type any key exit this help!",
+};
+
+static int helperHandler(struct Window *win)
+{
+    int ret = 0;
+    uint32_t  max_len = 0;
+    uint32_t len = 0;
+    int starty, startx;
+    WINDOW *nwin = win->nwin;
+
+    for (int i = 0; i < ARRAY_SIZE(helper_str); i++) {
+        len = strlen(helper_str[i]);
+        max_len = MAX(max_len, len);
+    }
+
+    starty = (win->layout.height -  ARRAY_SIZE(helper_str)) / 2;
+    startx = (win->layout.width - max_len - 2) / 2;
+
+    if (startx < 0 || starty < 0)
+        return 0;
+
+    WindowClear(win);
+
+    for (int i = 0; i < ARRAY_SIZE(helper_str); i++ ) {
+        mvwprintwc(nwin, starty + i, startx, COLOR_DEAFULT, "%s", helper_str[i]);
+    }
+
+    winframe(nwin, starty - 2, startx - 2,
+        starty + ARRAY_SIZE(helper_str) + 4,
+        startx + max_len + 4, "HELP");
+
+    wrefresh(nwin);
+
+    timeout(-1);
+    getch();
+
+    ret = WindowExit(win);
+    if (ret)
+        return  ret;
+    ret = WindowClear(win);
+    if (ret)
+        return ret;
+    ret = WindowInit(win);
+    if (ret)
+        return ret;
+
+    timeout(200);
+
+    return ret;
+}
+
 static int mainHandleInput(struct Window *win, int ch)
 {
     int ret = 0;
@@ -85,6 +154,11 @@ static int mainHandleInput(struct Window *win, int ch)
             if (ret)
                 return ret;
             break;
+        case 'h':
+        case '?':
+            ret = helperHandler(win);
+            if (ret)
+                return ret;
         default:
             break;
     }
