@@ -169,6 +169,8 @@ static int amdGpuSensorTypeMap(enum GpuSensorType type)
         [SensorType_GpuPower] = AMDGPU_INFO_SENSOR_GPU_AVG_POWER,
         [SensorType_VDDNB   ] = AMDGPU_INFO_SENSOR_VDDNB,
         [SensorType_VDDGFX  ] = AMDGPU_INFO_SENSOR_VDDGFX,
+        [SensorType_PSTATE_GFXClock] = AMDGPU_INFO_SENSOR_STABLE_PSTATE_GFX_SCLK,
+        [SensorType_PSTATE_MemClock] = AMDGPU_INFO_SENSOR_STABLE_PSTATE_GFX_MCLK,
     };
 
     if (type > SensorType_COUNT)

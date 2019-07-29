@@ -88,6 +88,8 @@ enum  GpuSensorType {
     SensorType_GpuPower,
     SensorType_VDDNB,
     SensorType_VDDGFX,
+    SensorType_PSTATE_GFXClock,
+    SensorType_PSTATE_MemClock,
     SensorType_COUNT,
 };
 struct GpuSensorInfo {
