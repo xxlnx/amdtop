@@ -220,6 +220,7 @@ static int update_client_info(WINDOW *nwin)
     int ret = 0;
     struct Device *device = getAcitveDevice();
     uint32_t count = 0;
+    char devbuf[MAX_NAME_SIZE];
     struct AmdGpuClientInfo *info = NULL;
     uint32_t startx = getmaxx(nwin) / 20;
     struct passwd *pw = NULL;
@@ -238,12 +239,14 @@ static int update_client_info(WINDOW *nwin)
     for (int i = 0; i < ui_clients_count; i++) {
         info = &clientInfos[i];
         pw = getpwuid(info->uid);
+        snprintf(devbuf, MAX_NAME_SIZE, "%s-%d", info->dev < 128 ? "Card" : "Render", info->dev);
         if (i < count) {
-            mvwprintwc(nwin, ui_clients_starty + i, startx, COLOR_DEAFULT, "%-5d %-15s\t %-10d\t %-10s\t %-10s\t %-10s\t",
+            mvwprintwc(nwin, ui_clients_starty + i, startx, COLOR_DEAFULT, "%-5d %-15s\t %-10d\t %-10s\t %-10s\t %-10s\t %-10s\t",
                        i,
                        info->command,
                        info->pid,
                        pw->pw_name,
+                       devbuf,
                        info->master == 'y' ? "master" : "normal",
                        info->a == 'a' ? "y" : "n");
         } else {
@@ -323,8 +326,8 @@ static int tabStateInfoInit(struct TabInfo *info, struct Window *win)
         mvwprintwc(nwin, line, i, COLOR_TAB_ACITVE, " ");
     ui_clients_starty = line + 1;
     ui_clients_count = win->layout.height - 2 - ui_clients_starty;
-    mvwprintwc(nwin, line, getmaxx(nwin) / 20, COLOR_TAB_ACITVE, "%-5s %-15s\t %-10s\t %-10s\t %-10s\t %-10s\t",
-               "ID", "Command", "Pid", "User", "Master", "Auth");
+    mvwprintwc(nwin, line, getmaxx(nwin) / 20, COLOR_TAB_ACITVE, "%-5s %-15s\t %-10s\t %-10s\t %-10s\t %-10s\t %-10s\t",
+               "ID", "Command", "Pid", "User", "Dev", "Master", "Auth");
 
     if (!hasRootPermission) {
         const char* text = "Need Root Permission!";
