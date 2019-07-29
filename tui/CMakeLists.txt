@@ -68,6 +68,11 @@ set(CPACK_PACKAGE_CONTACT "wangyang7902@gmail")
 
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Wang Yang")
 
+set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_SOURCE_DIR}/tui/debian/postinst;")
+
+message(print ${CMAKE_SOURCE_DIR}})
+
 install(TARGETS ${APP_NAME} DESTINATION local/bin)
+
 
 include(CPack)
