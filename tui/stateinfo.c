@@ -190,25 +190,25 @@ static int update_sensor_value(WINDOW *nwin)
     ret = gpuQuerySensorInfo(device->gpuDevice, SensorType_GpuTemp, &sensorInfo);
     if (ret)
         return ret;
-    mvwprintwc(nwin, temp_label.y, temp_label.x, COLOR_DEAFULT, temp_label.fmt, sensorInfo.value / 1000);
+    mvwprintwc(nwin, temp_label.y, temp_label.x, COLOR_GREEN_COLOR, temp_label.fmt, sensorInfo.value / 1000);
     mvwprintwc(nwin, temp_label.y, getcurx(nwin), COLOR_DEAFULT, "%s", temp_label.unit);
 
     ret = gpuQuerySensorInfo(device->gpuDevice, SensorType_GpuPower, &sensorInfo);
     if (ret)
         return ret;
-    mvwprintwc(nwin, power_label.y, power_label.x, COLOR_DEAFULT, power_label.fmt, sensorInfo.value);
+    mvwprintwc(nwin, power_label.y, power_label.x, COLOR_GREEN_COLOR, power_label.fmt, sensorInfo.value);
     mvwprintwc(nwin, power_label.y, getcurx(nwin), COLOR_DEAFULT, "%s", power_label.unit);
 
     ret = gpuQuerySensorInfo(device->gpuDevice, SensorType_PSTATE_GFXClock, &sensorInfo);
     if (ret)
         return ret;
-    mvwprintwc(nwin, psclk_label.y, psclk_label.x, COLOR_DEAFULT, psclk_label.fmt, sensorInfo.value);
+    mvwprintwc(nwin, psclk_label.y, psclk_label.x, COLOR_GREEN_COLOR, psclk_label.fmt, sensorInfo.value);
     mvwprintwc(nwin, psclk_label.y, getcurx(nwin), COLOR_DEAFULT, "%s", psclk_label.unit);
 
     ret = gpuQuerySensorInfo(device->gpuDevice, SensorType_PSTATE_GFXClock, &sensorInfo);
     if (ret)
         return ret;
-    mvwprintwc(nwin, pmclk_label.y, pmclk_label.x, COLOR_DEAFULT, pmclk_label.fmt, sensorInfo.value);
+    mvwprintwc(nwin, pmclk_label.y, pmclk_label.x, COLOR_GREEN_COLOR, pmclk_label.fmt, sensorInfo.value);
     mvwprintwc(nwin, pmclk_label.y, getcurx(nwin), COLOR_DEAFULT, "%s", pmclk_label.unit);
 
 
