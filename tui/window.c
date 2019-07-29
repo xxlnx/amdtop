@@ -146,6 +146,7 @@ static struct Color colors[] = {
     {COLOR_YELLOW_COLOR,    COLOR_YELLOW,   COLOR_WHITE,    A_NORMAL},
     {COLOR_GREEN_COLOR,     COLOR_GREEN,    COLOR_WHITE,    A_NORMAL},
     {COLOR_RED_COLOR,       COLOR_RED,      COLOR_WHITE,    A_NORMAL},
+    {COLOR_LOGO_COLOR,      COLOR_RED,      COLOR_WHITE,    A_BOLD},
 };
 
 int InitColor(struct WindowContext *ctx)

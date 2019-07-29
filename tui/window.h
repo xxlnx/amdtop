@@ -56,6 +56,7 @@ enum ColorType {
     COLOR_BLUE_COLOR,
     COLOR_YELLOW_COLOR,
     COLOR_GREEN_COLOR,
+    COLOR_LOGO_COLOR,
     COLOR_COUNT,
 };
 
