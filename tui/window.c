@@ -456,6 +456,9 @@ int barSetValue(struct WindowBar *bar, uint32_t value)
     int32_t percent = val * 100 / bar->max;
     int32_t count = bar->width * percent / 100;
 
+    if (bar->width < 4)
+        return 0;
+
     colorType = percent < 40 ? COLOR_GREEN_COLOR :
                 percent < 70 ? COLOR_YELLOW_COLOR: COLOR_RED_COLOR;
 

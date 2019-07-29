@@ -33,6 +33,7 @@ static struct GpuDeviceInfo deviceInfo;
 static uint32_t ui_clients_starty = 0, ui_clients_count = 0;
 static struct AmdGpuClientInfo clientInfos[MAX_CLIENT_COUNT] = {0};
 static bool hasRootPermission = false;
+static bool needRefresh = true;
 
 static struct WindowBar *getSensorBar(enum BarType type)
 {
@@ -267,6 +268,14 @@ static int tabStateInfoInit(struct TabInfo *info, struct Window *win)
     bar_width = (win->layout.width - 3 * startx - 2) / 2;
     width = bar_width - 28;
 
+    if (bar_width < 0 || width < 0) {
+        needRefresh = false;
+        mvwprintwc_center(nwin, COLOR_RED_COLOR, "Window Tool Small");
+        wrefresh(nwin);
+        return 0;
+    }
+
+
     start2x = startx + bar_width + startx;
 
     winframe(nwin, 1, 1, 10, win->layout.width - 2, "HW Monitor");
@@ -386,6 +395,9 @@ static int tabStateInfoUpdate(struct TabInfo *info, struct Window *win)
 {
     int ret = 0;
     WINDOW *nwin = win->nwin;
+
+    if (!needRefresh)
+        return 0;
 
     ret = update_sensor_value(nwin);
     if (ret)
