@@ -36,5 +36,8 @@ uint32_t getProcMemInfo(const char *name);
 uint32_t getTotalMem(void);
 uint32_t getFreeMem(void);
 uint64_t getcurrent_ns(void);
+int parseCpuInfo(char *item, char *name);
+int getCpuName(char *name);
+int getCpuCores(uint32_t *hw_core, uint32_t *threads);
 
 #endif
