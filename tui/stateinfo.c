@@ -233,9 +233,6 @@ static int update_client_info(WINDOW *nwin)
     if (ret)
         return ret;
 
-    mvwprintwc(nwin, ui_clients_starty + 5 , startx, COLOR_DEAFULT, "ret = %d count = %d, %d %d",
-        ret, count, ui_clients_starty, ui_clients_count);
-
     for (int i = 0; i < ui_clients_count; i++) {
         info = &clientInfos[i];
         pw = getpwuid(info->uid);
@@ -263,8 +260,7 @@ static int tabStateInfoInit(struct TabInfo *info, struct Window *win)
     struct Device *device = getAcitveDevice();
     int ret = 0;
     int width, bar_width, startx, start2x, line;
-
-    hasRootPermission = geteuid() == 0 ? true : false;
+    char fname[1024];
 
     line = 3;
     startx = win->layout.width / 20;
@@ -277,7 +273,6 @@ static int tabStateInfoInit(struct TabInfo *info, struct Window *win)
         wrefresh(nwin);
         return 0;
     }
-
 
     start2x = startx + bar_width + startx;
 
@@ -328,6 +323,12 @@ static int tabStateInfoInit(struct TabInfo *info, struct Window *win)
     ui_clients_count = win->layout.height - 2 - ui_clients_starty;
     mvwprintwc(nwin, line, getmaxx(nwin) / 20, COLOR_TAB_ACITVE, "%-5s %-15s\t %-10s\t %-10s\t %-10s\t %-10s\t %-10s\t",
                "ID", "Command", "Pid", "User", "Dev", "Master", "Auth");
+
+    snprintf(fname, 1024, "/sys/kernel/debug/dri/%d/clients", device->gpuCardDevice->minor);
+    if (access(fname, O_RDONLY))
+        hasRootPermission = false;
+    else
+        hasRootPermission = true;
 
     if (!hasRootPermission) {
         const char* text = "Need Root Permission!";
