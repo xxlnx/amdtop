@@ -10,6 +10,8 @@
 
 static struct utsname utsname;
 static char pretty_name[MAX_NAME_SIZE];
+static char cpuName[1024];
+static uint32_t threads, cores;
 
 struct dmi_id_info {
     char *label;
@@ -102,6 +104,15 @@ static int getInfo()
             return ret;
     }
 
+    ret = getCpuName(cpuName);
+    if (ret)
+        return ret;
+
+    ret = getCpuCores(&cores, &threads);
+    if (ret)
+        return ret;
+
+
     return ret;
 }
 
@@ -122,6 +133,9 @@ static int tabSystemInfoInit(struct TabInfo *info, struct Window *win)
     mvwprintw2c(nwin, line++, x, "%-15s: %s", "Release", utsname.release);
     mvwprintw2c(nwin, line++, x, "%-15s: %s", "HostName", utsname.nodename);
     mvwprintw2c(nwin, line++, x, "%-15s: %s", "Arch", utsname.machine);
+    mvwprintw2c(nwin, line++, x, "%-15s: %s", "CPU", cpuName);
+    mvwprintw2c(nwin, line++, x, "%-15s: %-2d", "Cores", cores);
+    mvwprintw2c(nwin, line++, x, "%-15s: %-2d", "Threads", threads);
     for (int i = 0; i < DMI_ID_INFO_COUNT; i++) {
         dmi_info = &id_infos[i];
         mvwprintw2c(nwin, line++, x, "%-15s: %s", dmi_info->label, dmi_info->value);
