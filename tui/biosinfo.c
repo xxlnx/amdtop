@@ -167,6 +167,53 @@ static void printDisplayInfo(struct Window *win, int32_t *y, int32_t *x)
     *x = col;
 }
 
+static char *getatomramtype(uint32_t type)
+{
+    switch (type) {
+        case ATOM_DGPU_VRAM_TYPE_GDDR5:
+            return "GDDR5";
+        case ATOM_DGPU_VRAM_TYPE_GDDR6:
+            return "GDDR6";
+        case ATOM_DGPU_VRAM_TYPE_HBM2:
+            return "HBM2";
+        default:
+            return "unknow";
+    }
+    return "unknow";
+}
+
+static void printVraminfo(struct Window *win, int32_t *y, int32_t *x)
+{
+
+    WINDOW* nwin = win->nwin;
+    int32_t line = *y, col = *x;
+    struct atombios *atombios = &gAtombios;
+    struct atom_common_table_header *tableHeader = NULL;
+    struct atom_vram_info_header_v2_3 *vram_info_v2_3;
+    struct atom_vram_info_header_v2_4 *vram_info_v2_4;
+    uint32_t mem_type = 0;
+    tableHeader = atombios_get_data_by_id(atombios, get_data_table_id(vram_info));
+    if (tableHeader->format_revision == 2) {
+        switch (tableHeader->content_revision) {
+            case 3:
+                vram_info_v2_3 = (void *)tableHeader;
+                mem_type = vram_info_v2_3->vram_module[0].memory_type;
+                break;
+            case 4:
+                vram_info_v2_4 = (void *)tableHeader;
+                mem_type = vram_info_v2_4->vram_module[0].memory_type;
+                break;
+            default:
+                break;
+        }
+    }
+
+    mvwprintw2c(nwin, line++, col, "%-15s: %s", "VRAM Type", getatomramtype(mem_type));
+    *y = line;
+    *x = col;
+
+}
+
 static int tabBiosInfoInit(struct TabInfo *info, struct Window *win)
 {
     WINDOW *nwin = win->nwin;
@@ -200,6 +247,8 @@ static int tabBiosInfoInit(struct TabInfo *info, struct Window *win)
     /* printDCEInfo(win, &line, &x); */
     /* atombios display info */
     /* printDisplayInfo(win, &line, &x); */
+    /* atombios vram info */
+    printVraminfo(win, &line, &x);
 
     wrefresh(nwin);
     return ret;
