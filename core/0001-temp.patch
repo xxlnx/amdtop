@@ -1,0 +1,95 @@
+From 4eab05f67a7d503174d4ac1c91b78f964c7820f7 Mon Sep 17 00:00:00 2001
+From: Wang Yang <wangyang7902@gmail.com>
+Date: Sun, 28 Jul 2019 14:13:52 +0800
+Subject: [PATCH] temp
+
+Signed-off-by: Wang Yang <wangyang7902@gmail.com>
+---
+ core/gpuinfo.c | 29 -----------------------------
+ core/gpuinfo.h | 23 ++++++++++++-----------
+ 2 files changed, 12 insertions(+), 40 deletions(-)
+
+diff --git a/core/gpuinfo.c b/core/gpuinfo.c
+index 067b3a6..0543aa5 100644
+--- a/core/gpuinfo.c
++++ b/core/gpuinfo.c
+@@ -100,31 +100,6 @@ int gpuQueryMemInfo(struct GpuDevice *device, enum GpuMemType type, struct GpuMe
+     return ret;
+ }
+ 
+-static int amdGpuFwTypeMap(enum GpuFwType type) {
+-    int fw_type = 0;
+-    static int fwtypeMap [] = {
+-        [FwType_VCE]  = AMDGPU_INFO_FW_VCE,
+-        [FwType_UVD]  = AMDGPU_INFO_FW_UVD,
+-        [FwType_MC]   = AMDGPU_INFO_FW_GFX_MEC,
+-        [FwType_ME]   = AMDGPU_INFO_FW_GFX_ME,
+-        [FwType_PFP]  = AMDGPU_INFO_FW_GFX_PFP,
+-        [FwType_CE]   = AMDGPU_INFO_FW_GFX_CE,
+-        [FwType_RLC]  = AMDGPU_INFO_FW_GFX_RLC,
+-        [FwType_SOS]  = AMDGPU_INFO_FW_SOS,
+-        [FwType_ASD]  = AMDGPU_INFO_FW_ASD,
+-        [FwType_SDMA] = AMDGPU_INFO_FW_SDMA,
+-        [FwType_SMC]  = AMDGPU_INFO_FW_SMC,
+-    };
+-    if (type > FwType_COUNT)
+-        return -EINVAL;
+-
+-    fw_type = fwtypeMap[type];
+-    if (fw_type == 0)
+-        return  -EINVAL;
+-
+-    return fw_type;
+-}
+-
+ int gpuQueryFWInfo(struct GpuDevice *device, enum GpuFwType type, uint32_t inst, uint32_t index, struct GpuFwInfo *fwInfo)
+ {
+     struct drm_amdgpu_info_firmware firmware = {0};
+@@ -132,10 +107,6 @@ int gpuQueryFWInfo(struct GpuDevice *device, enum GpuFwType type, uint32_t inst,
+     uint32_t  fw_type;
+     int ret = 0;
+ 
+-    fw_type = amdGpuFwTypeMap(type);
+-    if (fw_type < 0)
+-        return  fw_type;
+-
+     request.return_pointer = (__u64)&firmware;
+     request.return_size = sizeof(firmware);
+     request.query = AMDGPU_INFO_FW_VERSION;
+diff --git a/core/gpuinfo.h b/core/gpuinfo.h
+index 02cdbc9..11b3b1b 100644
+--- a/core/gpuinfo.h
++++ b/core/gpuinfo.h
+@@ -14,17 +14,18 @@ enum GpuMemType {
+ };
+ 
+ enum GpuFwType {
+-    FwType_VCE,
+-    FwType_UVD,
+-    FwType_MC,
+-    FwType_ME,
+-    FwType_PFP,
+-    FwType_CE,
+-    FwType_RLC,
+-    FwType_SOS,
+-    FwType_ASD,
+-    FwType_SDMA,
+-    FwType_SMC,
++    FwType_VCE = AMDGPU_INFO_FW_VCE,
++    FwType_UVD = AMDGPU_INFO_FW_UVD,
++    FwType_MC = AMDGPU_INFO_FW_GFX_MEC,
++    FwType_ME = AMDGPU_INFO_FW_GFX_ME,
++    FwType_PFP = AMDGPU_INFO_FW_GFX_PFP,
++    FwType_CE = AMDGPU_INFO_FW_GFX_CE,
++    FwType_RLC = AMDGPU_INFO_FW_GFX_RLC,
++    FwType_SOS = AMDGPU_INFO_FW_SOS,
++    FwType_ASD = AMDGPU_INFO_FW_ASD,
++    FwType_SDMA = AMDGPU_INFO_FW_SDMA,
++    FwType_SMC = AMDGPU_INFO_FW_SMC,
++    FwType_VCN = AMDGPU_INFO_FW_VCN,
+     FwType_COUNT,
+ };
+ 
+-- 
+2.22.0
+

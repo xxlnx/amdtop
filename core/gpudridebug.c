@@ -178,10 +178,9 @@ int amdGpuQueryClientInfo(struct GpuDevice *device, struct AmdGpuClientInfo *cli
 
     size = snprintf(fname, 100, "%s/%d/%s", DRI_DEBUG_PATH, device->minor, DRM_CLIENTS_NAME);
 
-    if (access(fname, O_RDONLY))
-        return -EPERM;
-
     fp = fopen(fname, "r");
+    if (!fp)
+        return -EACCES;
 
     fgets(buf, 1024, fp);
     if (!strstr(buf, "master"))
