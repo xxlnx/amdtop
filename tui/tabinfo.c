@@ -14,6 +14,7 @@ extern struct TabInfo displayInfo;
 extern struct TabInfo fenceInfo;
 
 static struct TabInfo * tabinfoList [] = {
+    &stateInfo,
     &systemInfo,
     &deviceInfo,
     &driverInfo,
@@ -22,7 +23,6 @@ static struct TabInfo * tabinfoList [] = {
     &biosInfo,
     &displayInfo,
     &fenceInfo,
-    &stateInfo,
     &aboutInfo,
 };
 
