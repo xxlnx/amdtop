@@ -235,9 +235,9 @@ static int update_client_info(WINDOW *nwin)
 
     for (int i = 0; i < ui_clients_count; i++) {
         info = &clientInfos[i];
-        pw = getpwuid(info->uid);
-        snprintf(devbuf, MAX_NAME_SIZE, "%s-%d", info->dev < 128 ? "Card" : "Render", info->dev);
-        if (i < count) {
+        if (i < count && !strstr(info->command, "unknow")) {
+            pw = getpwuid(info->uid);
+            snprintf(devbuf, MAX_NAME_SIZE, "%s-%d", info->dev < 128 ? "Card" : "Render", info->dev);
             mvwprintwc(nwin, ui_clients_starty + i, startx, COLOR_DEAFULT, "%-5d %-15s\t %-10d\t %-10s\t %-10s\t %-10s\t %-10s\t",
                        i,
                        info->command,
