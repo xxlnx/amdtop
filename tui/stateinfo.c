@@ -229,7 +229,7 @@ static int update_client_info(WINDOW *nwin)
         return 0;
 
     count = MAX_NAME_SIZE;
-    ret = amdGpuQueryClientInfo(device->gpuDevice, clientInfos, &count);
+    ret = amdGpuQueryClientInfo(device->gpuCardDevice, clientInfos, &count);
     if (ret)
         return ret;
 
@@ -324,11 +324,7 @@ static int tabStateInfoInit(struct TabInfo *info, struct Window *win)
     mvwprintwc(nwin, line, getmaxx(nwin) / 20, COLOR_TAB_ACITVE, "%-5s %-15s\t %-10s\t %-10s\t %-10s\t %-10s\t %-10s\t",
                "ID", "Command", "Pid", "User", "Dev", "Master", "Auth");
 
-    snprintf(fname, 1024, "/sys/kernel/debug/dri/%d/clients", device->gpuCardDevice->minor);
-    if (access(fname, O_RDONLY))
-        hasRootPermission = false;
-    else
-        hasRootPermission = true;
+    hasRootPermission = geteuid() == 0 ? true : false;
 
     if (!hasRootPermission) {
         const char* text = "Need Root Permission!";
