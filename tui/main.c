@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <ncurses.h>
 #include <signal.h>
+#include <unistd.h>
+#include <errno.h>
 #include "window.h"
 #include "device.h"
 #include "context.h"
@@ -21,6 +23,11 @@ int main(int argc, char *argv[])
     struct Context *context = getContext();
     struct DeviceContext *dctx = NULL;
     struct WindowContext *wctx = NULL;
+
+    if (geteuid() != 0) {
+        printf("Superuser permissions are required!\n");
+        return 0;
+    }
 
     signal(SIGSEGV, signal_handler);
     signal(SIGABRT, signal_handler);
