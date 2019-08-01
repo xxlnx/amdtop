@@ -229,7 +229,7 @@ static int update_client_info(WINDOW *nwin)
         return 0;
 
     count = MAX_NAME_SIZE;
-    ret = amdGpuQueryClientInfo(device->gpuCardDevice, clientInfos, &count);
+    ret = amdGpuQueryClientInfo(device->gpuDevice, clientInfos, &count);
     if (ret)
         return ret;
 

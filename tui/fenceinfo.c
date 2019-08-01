@@ -18,7 +18,7 @@ static int getRingInfo(void)
     if (device == current_device)
         return 0;
 
-    ret = amdGpuRingInfo(device->gpuCardDevice, gpuRings, &ring_count);
+    ret = amdGpuRingInfo(device->gpuDevice, gpuRings, &ring_count);
     if (ret)
         return ret;
 
@@ -29,7 +29,7 @@ static int update_fence_info(struct Window *win)
 {
     int ret = 0;
     struct Device *device = getAcitveDevice();
-    struct GpuDevice *gpuDevice = device->gpuCardDevice;
+    struct GpuDevice *gpuDevice = device->gpuDevice;
     struct AmdGpuFenceInfo fenceInfo;
     WINDOW *nwin = win->nwin;
     int line = 2;

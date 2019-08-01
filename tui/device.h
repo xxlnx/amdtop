@@ -21,7 +21,7 @@ struct Device {
     uint32_t revision_id;
     struct DeviceContext *ctx;
     struct pci_device *pdev;
-    struct GpuDevice *gpuDevice, *gpuCardDevice;
+    struct GpuDevice *gpuDevice;
     enum DeviceVendorType vendorType;
     bool driverisLoaded;
     uint32_t  irq;

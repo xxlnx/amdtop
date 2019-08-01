@@ -235,7 +235,7 @@ static int query_display_info(void)
     display_state.alive_connector_count = 0;
     display_state.valid = true;
 
-    ret = gpuGetModeResouce(device->gpuCardDevice, &resource);
+    ret = gpuGetModeResouce(device->gpuDevice, &resource);
     if (ret)
         return ret;
 

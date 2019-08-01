@@ -37,18 +37,13 @@ int UpdateDeviceInfo(struct Device *device)
         return ret;
     }
 
-    device->gpuDevice = gpuGetDeviceByBus(DEVICE_TYPE_RENDER,
-                                          pdev->domain,
-                                          pdev->bus,
-                                          pdev->dev,
-                                          pdev->func);
-    device->gpuCardDevice = gpuGetDeviceByBus(DEVICE_TYPE_CARD,
+    device->gpuDevice = gpuGetDeviceByBus(DEVICE_TYPE_CARD,
                                               pdev->domain,
                                               pdev->bus,
                                               pdev->dev,
                                               pdev->func);
 
-    if (!device->gpuDevice || !device->gpuCardDevice)
+    if (!device->gpuDevice)
         return -EACCES;
 
     device->driverisLoaded = true;
