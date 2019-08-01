@@ -114,6 +114,8 @@ int getCpuCores(uint32_t *hw_core, uint32_t *threads)
     int ret = 0;
     char value[1024];
 
+    MemClear(value, sizeof(value));
+
     if (hw_core) {
         ret = parseCpuInfo("cpu cores", value);
         if (ret)
