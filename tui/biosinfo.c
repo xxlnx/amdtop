@@ -5,7 +5,7 @@
 
 static struct atombios gAtombios;
 static struct GpuVBiosInfo gpuVBiosInfo;
-static struct device *cur_device = NULL;
+static struct Device *cur_device = NULL;
 
 static int getAllInfo(void)
 {
