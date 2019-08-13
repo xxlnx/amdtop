@@ -13,7 +13,8 @@ const char* app_logo[] = {
 static int tabAboutInfoInit(struct TabInfo *info, struct Window *win)
 {
     WINDOW *nwin = win->nwin;
-
+    char buf[1024];
+    size_t size = 0;
     int ret = 0;
     int line = 1;
     int startx = 2, starty = 0;
@@ -22,8 +23,14 @@ static int tabAboutInfoInit(struct TabInfo *info, struct Window *win)
 
     x = (win->layout.width - 60) / 2;
     starty = line++;
-    mvwprintwc(nwin, line++, x, COLOR_DEAFULT, "The amdtop is a free Linux software.");
-    mvwprintwc(nwin, line++, x, COLOR_DEAFULT, "that collects some hardware information about amdgpu.");
+
+    size = snprintf(buf, 1024, "the amdtop is a free Linux software.");
+    x  = (win->layout.width - size) / 2;
+    mvwprintwc(nwin, line++, x, COLOR_DEAFULT, "%s", buf);
+    size = snprintf(buf, 1024, "that collects some hardware information about amdgpu.");
+    x  = (win->layout.width - size) / 2;
+    mvwprintwc(nwin, line++, x, COLOR_DEAFULT, "%s", buf);
+
     winframe(nwin, starty, startx, line, endx, "");
     line++;
 
