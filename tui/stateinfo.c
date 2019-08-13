@@ -238,7 +238,7 @@ static int update_client_info(WINDOW *nwin)
         if (i < count && !strstr(info->command, "unknow")) {
             pw = getpwuid(info->uid);
             snprintf(devbuf, MAX_NAME_SIZE, "%s-%d", info->dev < 128 ? "Card" : "Render", info->dev);
-            mvwprintwc(nwin, ui_clients_starty + i, startx, COLOR_DEAFULT, "%-5d %-15s\t %-10d\t %-10s\t %-10s\t %-10s\t %-10s\t",
+            mvwprintwc(nwin, ui_clients_starty + i, startx, COLOR_DEAFULT, "%-5d %-15s\t %-10d\t %-10s\t %-10s\t %-10s\t %s",
                        i,
                        info->command,
                        info->pid,
@@ -321,7 +321,7 @@ static int tabStateInfoInit(struct TabInfo *info, struct Window *win)
         mvwprintwc(nwin, line, i, COLOR_TAB_ACITVE, " ");
     ui_clients_starty = line + 1;
     ui_clients_count = win->layout.height - 2 - ui_clients_starty;
-    mvwprintwc(nwin, line, getmaxx(nwin) / 20, COLOR_TAB_ACITVE, "%-5s %-15s\t %-10s\t %-10s\t %-10s\t %-10s\t %-10s\t",
+    mvwprintwc(nwin, line, getmaxx(nwin) / 20, COLOR_TAB_ACITVE, "%-5s %-15s\t %-10s\t %-10s\t %-10s\t %-10s\t %s",
                "ID", "Command", "Pid", "User", "Dev", "Master", "Auth");
 
     hasRootPermission = geteuid() == 0 ? true : false;
