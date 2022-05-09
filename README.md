@@ -1,4 +1,4 @@
-# XXXTool for AMDGPU Monitor
+# amdtop for AMDGPU Monitor
 
 ### Screen Shot
 
